@@ -1,0 +1,5 @@
+# Ignore local backup files and temporary python caches
+assets/hero/originals/
+*.pyc
+__pycache__/
+.DS_Store

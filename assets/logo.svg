@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 200" width="500" height="200">
+  <defs>
+    <!-- Gold Gradients -->
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#DFBF7A" />
+      <stop offset="50%" stop-color="#C5A059" />
+      <stop offset="100%" stop-color="#8C662D" />
+    </linearGradient>
+    <linearGradient id="maroonGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#801824" />
+      <stop offset="100%" stop-color="#4A0B12" />
+    </linearGradient>
+    <filter id="subtleShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#000000" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+
+  <!-- Crown and Monogram Crest above -->
+  <g transform="translate(250, 42)" filter="url(#subtleShadow)">
+    <!-- Crown -->
+    <path d="M -24 -14 L -18 2 L 0 -10 L 18 2 L 24 -14 L 14 -3 L 0 -18 L -14 -3 Z" fill="url(#goldGrad)" />
+    <!-- Crown Jewels / Dots -->
+    <circle cx="-24" cy="-16" r="2.2" fill="#DFBF7A" />
+    <circle cx="0" cy="-20" r="3" fill="#DFBF7A" />
+    <circle cx="24" cy="-16" r="2.2" fill="#DFBF7A" />
+    <!-- Crown Base Band -->
+    <path d="M -18 4 L 18 4 L 16 8 L -16 8 Z" fill="url(#goldGrad)" />
+
+    <!-- 'R' Monogram inside subtle laurel/crest -->
+    <text x="0" y="24" font-family="'Cormorant Garamond', 'Playfair Display', Georgia, serif" font-size="20" font-weight="700" fill="url(#goldGrad)" text-anchor="middle" letter-spacing="1">R</text>
+  </g>
+
+  <!-- "ROYAL" in Maroon Serif -->
+  <text x="250" y="128" 
+        font-family="'Cormorant Garamond', 'Playfair Display', Georgia, serif" 
+        font-size="62" 
+        font-weight="700" 
+        letter-spacing="10" 
+        fill="url(#maroonGrad)" 
+        stroke="#4A0B12"
+        stroke-width="0.8"
+        text-anchor="middle">
+    ROYAL
+  </text>
+
+  <!-- Delicate Gold Flank Lines -->
+  <line x1="80" y1="124" x2="120" y2="124" stroke="url(#goldGrad)" stroke-width="1.2" stroke-linecap="round"/>
+  <circle cx="125" cy="124" r="2" fill="url(#goldGrad)"/>
+  <circle cx="375" cy="124" r="2" fill="url(#goldGrad)"/>
+  <line x1="380" y1="124" x2="420" y2="124" stroke="url(#goldGrad)" stroke-width="1.2" stroke-linecap="round"/>
+
+  <!-- "Ethnics" in Script beneath -->
+  <text x="250" y="166" 
+        font-family="'Great Vibes', 'Brush Script MT', 'Bickham Script Pro', cursive, serif" 
+        font-size="38" 
+        font-style="italic" 
+        fill="url(#goldGrad)" 
+        text-anchor="middle">
+    Ethnics
+  </text>
+
+  <!-- Sub-caption: BY SHASHI CREATION · PUNE -->
+  <text x="250" y="188" 
+        font-family="'Montserrat', 'Inter', sans-serif" 
+        font-size="8.5" 
+        letter-spacing="5" 
+        fill="#8C827A" 
+        font-weight="600" 
+        text-anchor="middle">
+    BY SHASHI CREATION • PUNE
+  </text>
+</svg>
+
