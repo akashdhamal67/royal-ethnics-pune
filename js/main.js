@@ -691,6 +691,7 @@ function initAppointmentModal() {
 
       try {
         // Insert without .select() or representation request (insert-only permission)
+        console.log('Sending appointment to Supabase...', { name: nameVal, phone: validPhone, interested_in: interestedVal });
         const { error } = await supabaseClient
           .from('appointments')
           .insert([
@@ -708,7 +709,7 @@ function initAppointmentModal() {
           if (statusEl) {
             statusEl.className = 'appointment-status status-error';
             statusEl.style.display = 'block';
-            statusEl.innerHTML = 'Something went wrong. Please call us or WhatsApp <a href="https://wa.me/917768882288" target="_blank">+91 7768882288</a>.';
+            statusEl.innerHTML = 'Something went wrong: ' + (error.message || 'Please call us or WhatsApp') + ' <a href="https://wa.me/917768882288" target="_blank">+91 7768882288</a>.';
           }
           scrollToModalTop();
         } else {
@@ -731,7 +732,7 @@ function initAppointmentModal() {
         if (statusEl) {
           statusEl.className = 'appointment-status status-error';
           statusEl.style.display = 'block';
-          statusEl.innerHTML = 'Something went wrong. Please call us or WhatsApp <a href="https://wa.me/917768882288" target="_blank">+91 7768882288</a>.';
+          statusEl.innerHTML = 'Submission failed: ' + (err.message || 'Please check connection') + '. Call <a href="https://wa.me/917768882288" target="_blank">+91 7768882288</a>.';
         }
         scrollToModalTop();
       } finally {
