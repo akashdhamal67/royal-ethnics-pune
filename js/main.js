@@ -177,7 +177,42 @@ function initHeroSlider() {
     });
   });
 
-  // Pause on hover
+  // Touch swipe support for mobile
+  let touchStartX = 0;
+  let touchEndX = 0;
+  let touchStartY = 0;
+  let touchEndY = 0;
+
+  slider.addEventListener('touchstart', (e) => {
+    if (e.changedTouches && e.changedTouches[0]) {
+      touchStartX = e.changedTouches[0].clientX;
+      touchStartY = e.changedTouches[0].clientY;
+    }
+  }, { passive: true });
+
+  slider.addEventListener('touchend', (e) => {
+    if (e.changedTouches && e.changedTouches[0]) {
+      touchEndX = e.changedTouches[0].clientX;
+      touchEndY = e.changedTouches[0].clientY;
+      handleSwipe();
+    }
+  }, { passive: true });
+
+  const handleSwipe = () => {
+    const diffX = touchEndX - touchStartX;
+    const diffY = touchEndY - touchStartY;
+    // Ensure horizontal swipe is dominant and exceeds 45px threshold
+    if (Math.abs(diffX) > 45 && Math.abs(diffX) > Math.abs(diffY)) {
+      if (diffX < 0) {
+        nextSlide();
+      } else {
+        prevSlide();
+      }
+      startAutoPlay();
+    }
+  };
+
+  // Pause on hover (desktop)
   slider.addEventListener('mouseenter', stopAutoPlay);
   slider.addEventListener('mouseleave', startAutoPlay);
 
