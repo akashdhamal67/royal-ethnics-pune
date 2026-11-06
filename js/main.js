@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initProductDetail();
   initContactForm();
   initLazyMedia();
+  initAppointmentModal();
 });
 
 /* --------------------------------------------------------------------------
@@ -391,4 +392,282 @@ function initLazyMedia() {
     lazyImages.forEach(img => imageObserver.observe(img));
   }
 }
+
+/* --------------------------------------------------------------------------
+   8. Supabase Appointment Booking Modal
+   -------------------------------------------------------------------------- */
+function initAppointmentModal() {
+  // 1. Initialize Supabase Client
+  let supabaseClient = null;
+  if (typeof window.supabase !== 'undefined' && typeof SUPABASE_URL !== 'undefined' && typeof SUPABASE_ANON_KEY !== 'undefined') {
+    try {
+      supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    } catch (err) {
+      console.error('Failed to initialize Supabase client:', err);
+    }
+  }
+
+  // 2. Inject Modal HTML into the DOM if not already present
+  let modalOverlay = document.getElementById('appointment-modal');
+  if (!modalOverlay) {
+    const modalHtml = `
+      <div id="appointment-modal" class="appointment-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="appointment-modal-title">
+        <div class="appointment-modal-card">
+          <div class="appointment-modal-header">
+            <span class="appointment-modal-tag">Royal Fitting Trial</span>
+            <h3 id="appointment-modal-title" class="appointment-modal-title">Book An <span>Appointment</span></h3>
+            <p class="appointment-modal-subtitle">Sadashiv Peth, Pune Showroom &bull; Personal Groom Styling</p>
+            <button type="button" class="appointment-modal-close" id="appointment-modal-close" aria-label="Close appointment modal">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+          <div class="appointment-modal-body">
+            <form id="appointment-form" class="appointment-form" novalidate>
+              <!-- Hidden Honeypot Field -->
+              <div class="appointment-hp-field" aria-hidden="true">
+                <label for="appointment_website_hp">Leave this empty</label>
+                <input type="text" name="website" id="appointment_website_hp" tabindex="-1" autocomplete="off">
+              </div>
+
+              <!-- Full Name -->
+              <div class="appointment-form-group">
+                <label for="apt-name">Full Name <span class="req">*</span></label>
+                <input type="text" id="apt-name" name="name" class="appointment-form-control" placeholder="e.g. Rahul Sharma" required autocomplete="name">
+              </div>
+
+              <!-- Phone Number -->
+              <div class="appointment-form-group">
+                <label for="apt-phone">Phone Number <span class="req">*</span></label>
+                <input type="tel" id="apt-phone" name="phone" class="appointment-form-control" placeholder="10-digit mobile number" required autocomplete="tel" maxlength="15">
+              </div>
+
+              <!-- Interested In -->
+              <div class="appointment-form-group">
+                <label for="apt-interested">Interested In</label>
+                <select id="apt-interested" name="interested_in" class="appointment-form-control">
+                  <option value="Sherwani">Sherwani</option>
+                  <option value="Nawabi">Nawabi</option>
+                  <option value="Indo Western">Indo Western</option>
+                  <option value="Boys' Wear">Boys' Wear</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+
+              <!-- Preferred Visit Date -->
+              <div class="appointment-form-group">
+                <label for="apt-date">Preferred Visit Date</label>
+                <input type="date" id="apt-date" name="preferred_date" class="appointment-form-control">
+              </div>
+
+              <!-- Message -->
+              <div class="appointment-form-group">
+                <label for="apt-message">Message (Optional)</label>
+                <textarea id="apt-message" name="message" class="appointment-form-control" rows="2" placeholder="Any specific design, wedding date, or custom request..."></textarea>
+              </div>
+
+              <!-- Status Alert -->
+              <div id="appointment-status" class="appointment-status" role="alert"></div>
+
+              <!-- Submit Button -->
+              <button type="submit" id="appointment-submit-btn" class="appointment-form-submit">
+                <span>Book Appointment</span>
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+    modalOverlay = document.getElementById('appointment-modal');
+  }
+
+  const closeBtn = document.getElementById('appointment-modal-close');
+  const modalForm = document.getElementById('appointment-form');
+  const statusEl = document.getElementById('appointment-status');
+  const submitBtn = document.getElementById('appointment-submit-btn');
+  const dateInput = document.getElementById('apt-date');
+  const phoneInput = document.getElementById('apt-phone');
+  const nameInput = document.getElementById('apt-name');
+
+  // Set min date to today (YYYY-MM-DD)
+  if (dateInput) {
+    const today = new Date().toISOString().split('T')[0];
+    dateInput.min = today;
+  }
+
+  // Open modal handler
+  const openModal = (e) => {
+    if (e && e.preventDefault) e.preventDefault();
+    modalOverlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    if (statusEl) {
+      statusEl.className = 'appointment-status';
+      statusEl.innerHTML = '';
+    }
+    setTimeout(() => {
+      if (nameInput) nameInput.focus();
+    }, 100);
+  };
+
+  // Close modal handler
+  const closeModal = () => {
+    modalOverlay.classList.remove('open');
+    document.body.style.overflow = '';
+  };
+
+  // Attach open event to every "Book Appointment" button / link on the page
+  const bindAppointmentButtons = () => {
+    const allLinksAndButtons = document.querySelectorAll('a, button');
+    allLinksAndButtons.forEach(el => {
+      const text = el.textContent.trim().toLowerCase();
+      if (text === 'book appointment' || el.classList.contains('btn-nav-appointment') || el.classList.contains('open-appointment-modal')) {
+        // Prevent default navigation and open modal instead
+        el.addEventListener('click', (e) => {
+          // If inside a mobile drawer, close the drawer first
+          const mobileDrawer = document.querySelector('.mobile-drawer');
+          const toggleBtn = document.querySelector('.mobile-nav-toggle');
+          const backdrop = document.querySelector('.drawer-backdrop');
+          if (mobileDrawer && mobileDrawer.classList.contains('open')) {
+            mobileDrawer.classList.remove('open');
+            if (toggleBtn) toggleBtn.classList.remove('open');
+            if (backdrop) backdrop.classList.remove('active');
+          }
+          openModal(e);
+        });
+      }
+    });
+  };
+
+  bindAppointmentButtons();
+
+  // Close handlers
+  if (closeBtn) closeBtn.addEventListener('click', closeModal);
+
+  // Close on outside click
+  modalOverlay.addEventListener('click', (e) => {
+    if (e.target === modalOverlay) {
+      closeModal();
+    }
+  });
+
+  // Close on Escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modalOverlay.classList.contains('open')) {
+      closeModal();
+    }
+  });
+
+  // Phone validation: 10-digit Indian number (allows leading +91 or 0, but extracts 10 digits starting with 6-9)
+  const validateIndianPhone = (rawPhone) => {
+    const digitsOnly = rawPhone.replace(/\D/g, '');
+    let tenDigits = digitsOnly;
+    if (digitsOnly.length === 12 && digitsOnly.startsWith('91')) {
+      tenDigits = digitsOnly.substring(2);
+    } else if (digitsOnly.length === 11 && digitsOnly.startsWith('0')) {
+      tenDigits = digitsOnly.substring(1);
+    }
+    // Must be exactly 10 digits and start with 6, 7, 8, or 9
+    return /^[6-9]\d{9}$/.test(tenDigits) ? tenDigits : null;
+  };
+
+  // Submit Handler
+  if (modalForm) {
+    modalForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      // Reset status
+      statusEl.className = 'appointment-status';
+      statusEl.innerHTML = '';
+
+      // 1. Honeypot check: If filled, silently ignore
+      const hpValue = modalForm.querySelector('input[name="website"]')?.value;
+      if (hpValue) {
+        statusEl.className = 'appointment-status status-success';
+        statusEl.textContent = "Thank you! We'll contact you shortly.";
+        modalForm.reset();
+        return;
+      }
+
+      // 2. Validate Name
+      const nameVal = nameInput ? nameInput.value.trim() : '';
+      if (!nameVal) {
+        statusEl.className = 'appointment-status status-error';
+        statusEl.textContent = 'Please enter your full name.';
+        if (nameInput) nameInput.focus();
+        return;
+      }
+
+      // 3. Validate Phone Number (10-digit Indian number)
+      const phoneRaw = phoneInput ? phoneInput.value.trim() : '';
+      const validPhone = validateIndianPhone(phoneRaw);
+      if (!validPhone) {
+        statusEl.className = 'appointment-status status-error';
+        statusEl.textContent = 'Please enter a valid 10-digit Indian phone number.';
+        if (phoneInput) phoneInput.focus();
+        return;
+      }
+
+      // Form values
+      const interestedVal = modalForm.querySelector('[name="interested_in"]')?.value || 'Sherwani';
+      const preferredDateVal = modalForm.querySelector('[name="preferred_date"]')?.value || null;
+      const messageVal = modalForm.querySelector('[name="message"]')?.value.trim() || null;
+
+      // 4. Check client availability
+      if (!supabaseClient) {
+        statusEl.className = 'appointment-status status-error';
+        statusEl.innerHTML = 'Something went wrong. Please call us or WhatsApp <a href="https://wa.me/917768882288" target="_blank">+91 7768882288</a>.';
+        return;
+      }
+
+      // 5. Disable submit button and show "Sending..."
+      const originalBtnHtml = submitBtn.innerHTML;
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span>Sending...</span>';
+
+      try {
+        const { data, error } = await supabaseClient
+          .from('appointments')
+          .insert([
+            {
+              name: nameVal,
+              phone: validPhone,
+              interested_in: interestedVal,
+              preferred_date: preferredDateVal ? preferredDateVal : null,
+              message: messageVal
+            }
+          ]);
+
+        if (error) {
+          console.error('Supabase error:', error);
+          statusEl.className = 'appointment-status status-error';
+          statusEl.innerHTML = 'Something went wrong. Please call us or WhatsApp <a href="https://wa.me/917768882288" target="_blank">+91 7768882288</a>.';
+        } else {
+          statusEl.className = 'appointment-status status-success';
+          statusEl.textContent = "Thank you! We'll contact you shortly.";
+          modalForm.reset();
+          if (dateInput) {
+            dateInput.min = new Date().toISOString().split('T')[0];
+          }
+          // Optionally close modal after delay
+          setTimeout(() => {
+            if (modalOverlay.classList.contains('open')) {
+              closeModal();
+            }
+          }, 2500);
+        }
+      } catch (err) {
+        console.error('Submission exception:', err);
+        statusEl.className = 'appointment-status status-error';
+        statusEl.innerHTML = 'Something went wrong. Please call us or WhatsApp <a href="https://wa.me/917768882288" target="_blank">+91 7768882288</a>.';
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalBtnHtml;
+      }
+    });
+  }
+}
+
 
