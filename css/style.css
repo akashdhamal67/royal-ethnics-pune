@@ -2463,18 +2463,18 @@ textarea.appointment-form-control {
   font-size: 0.88rem;
   line-height: 1.45;
   text-align: center;
-  margin-top: 0.5rem;
+  margin-bottom: 1rem;
 }
 
 .appointment-status.status-success {
-  display: block;
+  display: block !important;
   background: rgba(32, 134, 69, 0.25);
   border: 1px solid #28a745;
   color: #d4edda;
 }
 
 .appointment-status.status-error {
-  display: block;
+  display: block !important;
   background: rgba(180, 40, 50, 0.25);
   border: 1px solid #dc3545;
   color: #f8d7da;

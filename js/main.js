@@ -597,8 +597,9 @@ function initAppointmentModal() {
     }
   });
 
-  // Phone validation: 10-digit Indian number (allows leading +91 or 0, but extracts 10 digits starting with 6-9)
+  // Phone validation: Indian number (accepts 10 digits starting with 6-9, or with +91 / 0)
   const validateIndianPhone = (rawPhone) => {
+    if (!rawPhone) return null;
     const digitsOnly = rawPhone.replace(/\D/g, '');
     let tenDigits = digitsOnly;
     if (digitsOnly.length === 12 && digitsOnly.startsWith('91')) {
@@ -606,8 +607,15 @@ function initAppointmentModal() {
     } else if (digitsOnly.length === 11 && digitsOnly.startsWith('0')) {
       tenDigits = digitsOnly.substring(1);
     }
-    // Must be exactly 10 digits and start with 6, 7, 8, or 9
-    return /^[6-9]\d{9}$/.test(tenDigits) ? tenDigits : null;
+    // Exactly 10 digits starting with 6, 7, 8, or 9
+    if (/^[6-9]\d{9}$/.test(tenDigits)) {
+      return tenDigits;
+    }
+    // Fallback: If 10 digits regardless of first digit, accept it
+    if (tenDigits.length === 10) {
+      return tenDigits;
+    }
+    return null;
   };
 
   // Submit Handler
