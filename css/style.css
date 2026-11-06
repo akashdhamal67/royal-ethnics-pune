@@ -2377,6 +2377,13 @@ textarea.form-control {
   transition: var(--transition-fast);
   outline: none;
   box-sizing: border-box;
+  color-scheme: dark;
+}
+
+input[type="date"].appointment-form-control::-webkit-calendar-picker-indicator {
+  filter: invert(0.8) sepia(50%) saturate(1000%) hue-rotate(5deg);
+  cursor: pointer;
+  opacity: 0.9;
 }
 
 .appointment-form-control:focus {

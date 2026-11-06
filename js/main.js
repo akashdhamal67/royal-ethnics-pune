@@ -676,13 +676,32 @@ function initAppointmentModal() {
       const preferredDateVal = modalForm.querySelector('[name="preferred_date"]')?.value || null;
       const messageVal = modalForm.querySelector('[name="message"]')?.value.trim() || null;
 
+      // Format preferred date to readable DD Mon YYYY if provided
+      let formattedPreferredDate = null;
+      if (preferredDateVal) {
+        try {
+          const parts = preferredDateVal.split('-');
+          if (parts.length === 3) {
+            const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+            const year = parts[0];
+            const monthIdx = parseInt(parts[1], 10) - 1;
+            const day = parts[2];
+            formattedPreferredDate = `${day} ${months[monthIdx]} ${year}`;
+          } else {
+            formattedPreferredDate = preferredDateVal;
+          }
+        } catch (e) {
+          formattedPreferredDate = preferredDateVal;
+        }
+      }
+
       // 4. Check client availability
       if (!supabaseClient) {
         console.error('Supabase client is not initialized. Please verify SUPABASE_URL and SUPABASE_ANON_KEY.');
         if (statusEl) {
           statusEl.className = 'appointment-status status-error';
           statusEl.style.display = 'block';
-          statusEl.innerHTML = 'Something went wrong. Please call us or WhatsApp <a href="https://wa.me/917768882288" target="_blank">+91 7768882288</a>.';
+          statusEl.innerHTML = 'Something went wrong: Supabase client not loaded. Please call or WhatsApp <a href="https://wa.me/917768882288" target="_blank">+91 7768882288</a>.';
         }
         scrollToModalTop();
         return;
@@ -703,7 +722,7 @@ function initAppointmentModal() {
               name: nameVal,
               phone: validPhone,
               interested_in: interestedVal,
-              preferred_date: preferredDateVal ? preferredDateVal : null,
+              preferred_date: formattedPreferredDate || preferredDateVal || null,
               message: messageVal
             }
           ]);
