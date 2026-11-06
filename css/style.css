@@ -2031,11 +2031,17 @@ textarea.form-control {
   }
 
   /* 2. Hero Video Slider (Mobile Stacked Layout - No Cropping) */
+  .site-header {
+    background: #2a0a10 !important;
+    border-bottom: 1px solid rgba(201, 164, 92, 0.25) !important;
+  }
+
   .hero-slider-section {
     height: auto;
     min-height: auto;
     overflow: visible;
     background: #2a0a10;
+    padding-top: 72px; /* Clears fixed navbar so video plays completely underneath the header bar */
   }
 
   .hero-slider {
@@ -2142,7 +2148,7 @@ textarea.form-control {
   /* Slider Arrows: placed over the video sides */
   .slider-arrow {
     display: flex;
-    top: calc((100vw * 9 / 16) / 2);
+    top: calc(72px + ((100vw * 9 / 16) / 2));
     width: 38px;
     height: 38px;
     background: rgba(42, 10, 16, 0.65);
