@@ -69,10 +69,15 @@ function initMobileMenu() {
   toggleBtn.addEventListener('click', toggle);
   if (backdrop) backdrop.addEventListener('click', closeMenu);
 
-  // Close on link click inside drawer
+  // Close on link click inside drawer (except appointment modal triggers)
   const drawerLinks = drawer.querySelectorAll('.mobile-menu-link, .btn');
   drawerLinks.forEach(link => {
-    link.addEventListener('click', closeMenu);
+    link.addEventListener('click', (e) => {
+      const text = link.textContent.trim().toLowerCase();
+      if (text !== 'book appointment' && !link.classList.contains('btn-nav-appointment') && !link.classList.contains('open-appointment-modal')) {
+        closeMenu();
+      }
+    });
   });
 }
 
