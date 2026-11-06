@@ -559,6 +559,10 @@ function initAppointmentModal() {
   const bindAppointmentButtons = () => {
     const allLinksAndButtons = document.querySelectorAll('a, button');
     allLinksAndButtons.forEach(el => {
+      // Do NOT attach openModal to the modal submit button!
+      if (el.id === 'appointment-submit-btn' || el.closest('#appointment-form')) {
+        return;
+      }
       const text = el.textContent.trim().toLowerCase();
       if (text === 'book appointment' || el.classList.contains('btn-nav-appointment') || el.classList.contains('open-appointment-modal')) {
         el.addEventListener('click', (e) => {
