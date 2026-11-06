@@ -424,7 +424,10 @@ function initAppointmentModal() {
               </svg>
             </button>
           </div>
-          <div class="appointment-modal-body">
+          <div class="appointment-modal-body" id="appointment-modal-body">
+            <!-- Status Alert (at top so visible immediately) -->
+            <div id="appointment-status" class="appointment-status" role="alert"></div>
+
             <form id="appointment-form" class="appointment-form" novalidate>
               <!-- Hidden Honeypot Field -->
               <div class="appointment-hp-field" aria-hidden="true">
@@ -432,50 +435,64 @@ function initAppointmentModal() {
                 <input type="text" name="website" id="appointment_website_hp" tabindex="-1" autocomplete="off">
               </div>
 
-              <!-- Full Name -->
-              <div class="appointment-form-group">
-                <label for="apt-name">Full Name <span class="req">*</span></label>
-                <input type="text" id="apt-name" name="name" class="appointment-form-control" placeholder="e.g. Rahul Sharma" required autocomplete="name">
+              <!-- Form Fields Container (hidden on success) -->
+              <div id="appointment-form-fields" class="appointment-form-fields" style="display: flex; flex-direction: column; gap: 1rem;">
+                <!-- Full Name -->
+                <div class="appointment-form-group">
+                  <label for="apt-name">Full Name <span class="req">*</span></label>
+                  <input type="text" id="apt-name" name="name" class="appointment-form-control" placeholder="e.g. Rahul Sharma" required autocomplete="name">
+                </div>
+
+                <!-- Phone Number -->
+                <div class="appointment-form-group">
+                  <label for="apt-phone">Phone Number <span class="req">*</span></label>
+                  <input type="tel" id="apt-phone" name="phone" class="appointment-form-control" placeholder="10-digit mobile number" required autocomplete="tel" maxlength="15">
+                </div>
+
+                <!-- Interested In -->
+                <div class="appointment-form-group">
+                  <label for="apt-interested">Interested In</label>
+                  <select id="apt-interested" name="interested_in" class="appointment-form-control">
+                    <option value="Sherwani">Sherwani</option>
+                    <option value="Nawabi">Nawabi</option>
+                    <option value="Indo Western">Indo Western</option>
+                    <option value="Boys' Wear">Boys' Wear</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+
+                <!-- Preferred Visit Date -->
+                <div class="appointment-form-group">
+                  <label for="apt-date">Preferred Visit Date</label>
+                  <input type="date" id="apt-date" name="preferred_date" class="appointment-form-control">
+                </div>
+
+                <!-- Message -->
+                <div class="appointment-form-group">
+                  <label for="apt-message">Message (Optional)</label>
+                  <textarea id="apt-message" name="message" class="appointment-form-control" rows="2" placeholder="Any specific design, wedding date, or custom request..."></textarea>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" id="appointment-submit-btn" class="appointment-form-submit">
+                  <span>Book Appointment</span>
+                </button>
               </div>
-
-              <!-- Phone Number -->
-              <div class="appointment-form-group">
-                <label for="apt-phone">Phone Number <span class="req">*</span></label>
-                <input type="tel" id="apt-phone" name="phone" class="appointment-form-control" placeholder="10-digit mobile number" required autocomplete="tel" maxlength="15">
-              </div>
-
-              <!-- Interested In -->
-              <div class="appointment-form-group">
-                <label for="apt-interested">Interested In</label>
-                <select id="apt-interested" name="interested_in" class="appointment-form-control">
-                  <option value="Sherwani">Sherwani</option>
-                  <option value="Nawabi">Nawabi</option>
-                  <option value="Indo Western">Indo Western</option>
-                  <option value="Boys' Wear">Boys' Wear</option>
-                  <option value="Other">Other</option>
-                </select>
-              </div>
-
-              <!-- Preferred Visit Date -->
-              <div class="appointment-form-group">
-                <label for="apt-date">Preferred Visit Date</label>
-                <input type="date" id="apt-date" name="preferred_date" class="appointment-form-control">
-              </div>
-
-              <!-- Message -->
-              <div class="appointment-form-group">
-                <label for="apt-message">Message (Optional)</label>
-                <textarea id="apt-message" name="message" class="appointment-form-control" rows="2" placeholder="Any specific design, wedding date, or custom request..."></textarea>
-              </div>
-
-              <!-- Status Alert -->
-              <div id="appointment-status" class="appointment-status" role="alert"></div>
-
-              <!-- Submit Button -->
-              <button type="submit" id="appointment-submit-btn" class="appointment-form-submit">
-                <span>Book Appointment</span>
-              </button>
             </form>
+
+            <!-- Success Container (shown only on success) -->
+            <div id="appointment-success-container" style="display: none; text-align: center; padding: 2rem 1rem;">
+              <div style="width: 56px; height: 56px; border-radius: 50%; background: rgba(32, 134, 69, 0.2); border: 2px solid #28a745; color: #28a745; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.2rem;">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </div>
+              <h4 style="font-family: var(--font-serif); font-size: 1.5rem; color: #FFFFFF; margin: 0 0 0.5rem;">Appointment Requested</h4>
+              <p style="font-size: 0.95rem; color: var(--color-cream-soft); margin: 0 0 1.8rem; line-height: 1.5;">Thank you! We'll contact you shortly.</p>
+              <button type="button" id="appointment-success-close-btn" class="btn btn-gold" style="width: 100%; min-height: 44px;">
+                Close
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -485,7 +502,11 @@ function initAppointmentModal() {
   }
 
   const closeBtn = document.getElementById('appointment-modal-close');
+  const modalBody = document.getElementById('appointment-modal-body');
   const modalForm = document.getElementById('appointment-form');
+  const formFieldsContainer = document.getElementById('appointment-form-fields');
+  const successContainer = document.getElementById('appointment-success-container');
+  const successCloseBtn = document.getElementById('appointment-success-close-btn');
   const statusEl = document.getElementById('appointment-status');
   const submitBtn = document.getElementById('appointment-submit-btn');
   const dateInput = document.getElementById('apt-date');
@@ -498,15 +519,26 @@ function initAppointmentModal() {
     dateInput.min = today;
   }
 
+  const scrollToModalTop = () => {
+    if (modalBody) modalBody.scrollTop = 0;
+  };
+
   // Open modal handler
   const openModal = (e) => {
     if (e && e.preventDefault) e.preventDefault();
     modalOverlay.classList.add('open');
     document.body.style.overflow = 'hidden';
+
+    // Reset view: show form fields, hide success container, clear status
+    if (formFieldsContainer) formFieldsContainer.style.display = 'flex';
+    if (successContainer) successContainer.style.display = 'none';
     if (statusEl) {
       statusEl.className = 'appointment-status';
       statusEl.innerHTML = '';
+      statusEl.style.display = 'none';
     }
+    scrollToModalTop();
+
     setTimeout(() => {
       if (nameInput) nameInput.focus();
     }, 100);
@@ -524,7 +556,6 @@ function initAppointmentModal() {
     allLinksAndButtons.forEach(el => {
       const text = el.textContent.trim().toLowerCase();
       if (text === 'book appointment' || el.classList.contains('btn-nav-appointment') || el.classList.contains('open-appointment-modal')) {
-        // Prevent default navigation and open modal instead
         el.addEventListener('click', (e) => {
           // If inside a mobile drawer, close the drawer first
           const mobileDrawer = document.querySelector('.mobile-drawer');
@@ -545,6 +576,7 @@ function initAppointmentModal() {
 
   // Close handlers
   if (closeBtn) closeBtn.addEventListener('click', closeModal);
+  if (successCloseBtn) successCloseBtn.addEventListener('click', closeModal);
 
   // Close on outside click
   modalOverlay.addEventListener('click', (e) => {
@@ -579,23 +611,31 @@ function initAppointmentModal() {
       e.preventDefault();
 
       // Reset status
-      statusEl.className = 'appointment-status';
-      statusEl.innerHTML = '';
+      if (statusEl) {
+        statusEl.className = 'appointment-status';
+        statusEl.innerHTML = '';
+        statusEl.style.display = 'none';
+      }
 
       // 1. Honeypot check: If filled, silently ignore
       const hpValue = modalForm.querySelector('input[name="website"]')?.value;
       if (hpValue) {
-        statusEl.className = 'appointment-status status-success';
-        statusEl.textContent = "Thank you! We'll contact you shortly.";
+        if (formFieldsContainer) formFieldsContainer.style.display = 'none';
+        if (successContainer) successContainer.style.display = 'block';
         modalForm.reset();
+        scrollToModalTop();
         return;
       }
 
       // 2. Validate Name
       const nameVal = nameInput ? nameInput.value.trim() : '';
       if (!nameVal) {
-        statusEl.className = 'appointment-status status-error';
-        statusEl.textContent = 'Please enter your full name.';
+        if (statusEl) {
+          statusEl.className = 'appointment-status status-error';
+          statusEl.style.display = 'block';
+          statusEl.textContent = 'Please enter your full name.';
+        }
+        scrollToModalTop();
         if (nameInput) nameInput.focus();
         return;
       }
@@ -604,8 +644,12 @@ function initAppointmentModal() {
       const phoneRaw = phoneInput ? phoneInput.value.trim() : '';
       const validPhone = validateIndianPhone(phoneRaw);
       if (!validPhone) {
-        statusEl.className = 'appointment-status status-error';
-        statusEl.textContent = 'Please enter a valid 10-digit Indian phone number.';
+        if (statusEl) {
+          statusEl.className = 'appointment-status status-error';
+          statusEl.style.display = 'block';
+          statusEl.textContent = 'Please enter a valid 10-digit Indian phone number.';
+        }
+        scrollToModalTop();
         if (phoneInput) phoneInput.focus();
         return;
       }
@@ -617,8 +661,13 @@ function initAppointmentModal() {
 
       // 4. Check client availability
       if (!supabaseClient) {
-        statusEl.className = 'appointment-status status-error';
-        statusEl.innerHTML = 'Something went wrong. Please call us or WhatsApp <a href="https://wa.me/917768882288" target="_blank">+91 7768882288</a>.';
+        console.error('Supabase client is not initialized. Please verify SUPABASE_URL and SUPABASE_ANON_KEY.');
+        if (statusEl) {
+          statusEl.className = 'appointment-status status-error';
+          statusEl.style.display = 'block';
+          statusEl.innerHTML = 'Something went wrong. Please call us or WhatsApp <a href="https://wa.me/917768882288" target="_blank">+91 7768882288</a>.';
+        }
+        scrollToModalTop();
         return;
       }
 
@@ -628,7 +677,8 @@ function initAppointmentModal() {
       submitBtn.innerHTML = '<span>Sending...</span>';
 
       try {
-        const { data, error } = await supabaseClient
+        // Insert without .select() or representation request (insert-only permission)
+        const { error } = await supabaseClient
           .from('appointments')
           .insert([
             {
@@ -641,27 +691,36 @@ function initAppointmentModal() {
           ]);
 
         if (error) {
-          console.error('Supabase error:', error);
-          statusEl.className = 'appointment-status status-error';
-          statusEl.innerHTML = 'Something went wrong. Please call us or WhatsApp <a href="https://wa.me/917768882288" target="_blank">+91 7768882288</a>.';
+          console.error('Supabase error inserting appointment:', error);
+          if (statusEl) {
+            statusEl.className = 'appointment-status status-error';
+            statusEl.style.display = 'block';
+            statusEl.innerHTML = 'Something went wrong. Please call us or WhatsApp <a href="https://wa.me/917768882288" target="_blank">+91 7768882288</a>.';
+          }
+          scrollToModalTop();
         } else {
-          statusEl.className = 'appointment-status status-success';
-          statusEl.textContent = "Thank you! We'll contact you shortly.";
+          // Success: hide form fields and show confirmation view with Close button
+          if (formFieldsContainer) formFieldsContainer.style.display = 'none';
+          if (successContainer) successContainer.style.display = 'block';
+          if (statusEl) {
+            statusEl.className = 'appointment-status';
+            statusEl.innerHTML = '';
+            statusEl.style.display = 'none';
+          }
           modalForm.reset();
           if (dateInput) {
             dateInput.min = new Date().toISOString().split('T')[0];
           }
-          // Optionally close modal after delay
-          setTimeout(() => {
-            if (modalOverlay.classList.contains('open')) {
-              closeModal();
-            }
-          }, 2500);
+          scrollToModalTop();
         }
       } catch (err) {
         console.error('Submission exception:', err);
-        statusEl.className = 'appointment-status status-error';
-        statusEl.innerHTML = 'Something went wrong. Please call us or WhatsApp <a href="https://wa.me/917768882288" target="_blank">+91 7768882288</a>.';
+        if (statusEl) {
+          statusEl.className = 'appointment-status status-error';
+          statusEl.style.display = 'block';
+          statusEl.innerHTML = 'Something went wrong. Please call us or WhatsApp <a href="https://wa.me/917768882288" target="_blank">+91 7768882288</a>.';
+        }
+        scrollToModalTop();
       } finally {
         submitBtn.disabled = false;
         submitBtn.innerHTML = originalBtnHtml;
