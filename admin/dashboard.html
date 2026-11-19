@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard | Royal Ethnics Pune</title>
+  <meta name="robots" content="noindex, nofollow">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="../assets/icons/favicon.svg">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,400&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --color-maroon: #5a1420;
+      --color-maroon-dark: #2a0a10;
+      --color-maroon-deep: #1c060b;
+      --color-gold: #c9a45c;
+      --color-gold-light: #dfc285;
+      --color-gold-dark: #a9833b;
+      --color-cream: #FAF7F2;
+      --font-serif: 'Cormorant Garamond', Georgia, serif;
+      --font-sans: 'Montserrat', -apple-system, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Hide page content until auth status is verified to prevent flashing */
+    body {
+      font-family: var(--font-sans);
+      background-color: #120306;
+      color: var(--color-cream);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      opacity: 0;
+      transition: opacity 0.25s ease-in;
+    }
+
+    body.authenticated {
+      opacity: 1;
+    }
+
+    /* Top navigation bar */
+    .admin-navbar {
+      height: 70px;
+      background: var(--color-maroon-dark);
+      border-bottom: 1px solid rgba(201, 164, 92, 0.25);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .brand-title {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      font-family: var(--font-serif);
+      font-size: 1.45rem;
+      font-weight: 600;
+      color: #FFFFFF;
+      text-decoration: none;
+    }
+
+    .brand-title span {
+      color: var(--color-gold);
+      font-style: italic;
+    }
+
+    .brand-title svg {
+      width: 26px;
+      height: 26px;
+      color: var(--color-gold);
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+    }
+
+    .user-info {
+      font-size: 0.85rem;
+      color: var(--color-gold-light);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .user-email-badge {
+      color: #FFFFFF;
+      font-weight: 600;
+      background: rgba(201, 164, 92, 0.15);
+      border: 1px solid rgba(201, 164, 92, 0.3);
+      padding: 0.25rem 0.65rem;
+      border-radius: 4px;
+    }
+
+    .btn-logout {
+      background: transparent;
+      border: 1px solid rgba(201, 164, 92, 0.4);
+      color: var(--color-cream);
+      padding: 0.5rem 1.15rem;
+      font-family: var(--font-sans);
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      border-radius: 4px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.2s ease;
+    }
+
+    .btn-logout:hover {
+      background: rgba(180, 25, 40, 0.3);
+      border-color: rgba(230, 60, 80, 0.6);
+      color: #ffb4be;
+    }
+
+    /* Main Dashboard Layout */
+    .dashboard-container {
+      flex: 1;
+      max-width: 1100px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 3rem 1.5rem;
+    }
+
+    .dashboard-card {
+      background: var(--color-maroon-deep);
+      border: 1px solid rgba(201, 164, 92, 0.25);
+      border-radius: 12px;
+      padding: 2.5rem;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+    }
+
+    .dashboard-header {
+      border-bottom: 1px solid rgba(201, 164, 92, 0.15);
+      padding-bottom: 1.5rem;
+      margin-bottom: 2rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .dashboard-header h2 {
+      font-family: var(--font-serif);
+      font-size: 2rem;
+      font-weight: 600;
+      color: #FFFFFF;
+    }
+
+    .dashboard-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: rgba(40, 167, 69, 0.15);
+      border: 1px solid rgba(40, 167, 69, 0.4);
+      color: #75e892;
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 0.35rem 0.85rem;
+      border-radius: 20px;
+    }
+
+    .dashboard-badge::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #28a745;
+      display: inline-block;
+    }
+
+    .welcome-box {
+      background: rgba(42, 10, 16, 0.7);
+      border: 1px solid rgba(201, 164, 92, 0.2);
+      border-radius: 8px;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    .welcome-text {
+      font-size: 1.25rem;
+      margin-bottom: 0.5rem;
+      color: var(--color-cream);
+    }
+
+    .welcome-email {
+      font-family: var(--font-serif);
+      font-size: 1.6rem;
+      color: var(--color-gold);
+      font-weight: 600;
+    }
+
+    .welcome-sub {
+      margin-top: 1rem;
+      font-size: 0.9rem;
+      color: #c5b8b0;
+    }
+
+    @media (max-width: 600px) {
+      .admin-navbar {
+        padding: 0 1rem;
+      }
+      .dashboard-card {
+        padding: 1.75rem 1.25rem;
+      }
+      .nav-actions {
+        gap: 0.65rem;
+      }
+      .user-info {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Admin Navbar -->
+  <header class="admin-navbar">
+    <a href="../index.html" class="brand-title" target="_blank" title="View live site">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14v1H5z"></path>
+      </svg>
+      Royal Ethnics <span>Admin</span>
+    </a>
+
+    <div class="nav-actions">
+      <div class="user-info">
+        Logged in as <span id="nav-user-email" class="user-email-badge">Loading...</span>
+      </div>
+      <button type="button" id="btn-logout" class="btn-logout" title="Log out of admin session">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+          <polyline points="16 17 21 12 16 7"></polyline>
+          <line x1="21" y1="12" x2="9" y2="12"></line>
+        </svg>
+        <span>Logout</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Dashboard Content -->
+  <main class="dashboard-container">
+    <div class="dashboard-card">
+      <div class="dashboard-header">
+        <h2>Admin Overview</h2>
+        <span class="dashboard-badge">Supabase Auth Connected</span>
+      </div>
+
+      <div class="welcome-box">
+        <p class="welcome-text">Logged in as</p>
+        <div id="display-user-email" class="welcome-email">Loading...</div>
+        <p class="welcome-sub">You have successfully authenticated with the Royal Ethnics administrative portal.</p>
+      </div>
+    </div>
+  </main>
+
+  <!-- Supabase JS & Config -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
+  <script src="../js/config.js?v=2.3"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      // 1. Verify config
+      if (typeof window.supabase === 'undefined' || typeof SUPABASE_URL === 'undefined' || typeof SUPABASE_ANON_KEY === 'undefined') {
+        window.location.replace('index.html');
+        return;
+      }
+
+      const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+      // 2. Auth Guard: Verify session
+      try {
+        const { data: { session }, error } = await client.auth.getSession();
+
+        if (error || !session || !session.user) {
+          // Not logged in -> Redirect to login page
+          window.location.replace('index.html');
+          return;
+        }
+
+        // Active authenticated user
+        const userEmail = session.user.email || 'Admin';
+        const navEmailEl = document.getElementById('nav-user-email');
+        const displayEmailEl = document.getElementById('display-user-email');
+
+        if (navEmailEl) navEmailEl.textContent = userEmail;
+        if (displayEmailEl) displayEmailEl.textContent = userEmail;
+
+        // Reveal the authenticated page
+        document.body.classList.add('authenticated');
+
+      } catch (err) {
+        console.error('Auth verification error:', err);
+        window.location.replace('index.html');
+        return;
+      }
+
+      // 3. Logout Handler
+      const logoutBtn = document.getElementById('btn-logout');
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', async () => {
+          logoutBtn.disabled = true;
+          logoutBtn.innerHTML = '<span>Logging out...</span>';
+          try {
+            await client.auth.signOut();
+          } catch (err) {
+            console.warn('Sign out exception:', err);
+          }
+          window.location.replace('index.html');
+        });
+      }
+
+      // 4. Listen to auth state changes (e.g. if token expires or signs out in another tab)
+      client.auth.onAuthStateChange((event, session) => {
+        if (event === 'SIGNED_OUT' || !session) {
+          window.location.replace('index.html');
+        }
+      });
+    });
+  </script>
+</body>
+</html>
