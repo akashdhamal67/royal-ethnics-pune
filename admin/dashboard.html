@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Dashboard | Royal Ethnics Pune</title>
+  <title>Admin Dashboard &amp; Products | Royal Ethnics Pune</title>
   <meta name="robots" content="noindex, nofollow">
 
   <!-- Favicon -->
@@ -23,6 +23,7 @@
       --color-gold-light: #dfc285;
       --color-gold-dark: #a9833b;
       --color-cream: #FAF7F2;
+      --color-cream-card: #24090e;
       --font-serif: 'Cormorant Garamond', Georgia, serif;
       --font-sans: 'Montserrat', -apple-system, sans-serif;
     }
@@ -33,7 +34,6 @@
       padding: 0;
     }
 
-    /* Hide page content until auth status is verified to prevent flashing */
     body {
       font-family: var(--font-sans);
       background-color: #120306;
@@ -49,7 +49,7 @@
       opacity: 1;
     }
 
-    /* Top navigation bar */
+    /* Top navbar */
     .admin-navbar {
       height: 70px;
       background: var(--color-maroon-dark);
@@ -68,7 +68,7 @@
       align-items: center;
       gap: 0.65rem;
       font-family: var(--font-serif);
-      font-size: 1.45rem;
+      font-size: 1.4rem;
       font-weight: 600;
       color: #FFFFFF;
       text-decoration: none;
@@ -80,8 +80,8 @@
     }
 
     .brand-title svg {
-      width: 26px;
-      height: 26px;
+      width: 24px;
+      height: 24px;
       color: var(--color-gold);
     }
 
@@ -92,7 +92,7 @@
     }
 
     .user-info {
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       color: var(--color-gold-light);
       display: flex;
       align-items: center;
@@ -112,9 +112,9 @@
       background: transparent;
       border: 1px solid rgba(201, 164, 92, 0.4);
       color: var(--color-cream);
-      padding: 0.5rem 1.15rem;
+      padding: 0.45rem 1rem;
       font-family: var(--font-sans);
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       font-weight: 600;
       letter-spacing: 0.05em;
       border-radius: 4px;
@@ -131,99 +131,565 @@
       color: #ffb4be;
     }
 
-    /* Main Dashboard Layout */
+    /* Main Container */
     .dashboard-container {
       flex: 1;
-      max-width: 1100px;
+      max-width: 1240px;
       width: 100%;
       margin: 0 auto;
-      padding: 3rem 1.5rem;
+      padding: 2rem 1.5rem 4rem;
     }
 
-    .dashboard-card {
-      background: var(--color-maroon-deep);
-      border: 1px solid rgba(201, 164, 92, 0.25);
-      border-radius: 12px;
-      padding: 2.5rem;
-      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
-    }
-
-    .dashboard-header {
-      border-bottom: 1px solid rgba(201, 164, 92, 0.15);
-      padding-bottom: 1.5rem;
-      margin-bottom: 2rem;
-      display: flex;
-      flex-wrap: wrap;
+    /* Notification Toasts / Banner */
+    .alert-banner {
+      padding: 0.85rem 1.25rem;
+      border-radius: 6px;
+      font-size: 0.88rem;
+      margin-bottom: 1.5rem;
+      display: none;
       align-items: center;
       justify-content: space-between;
       gap: 1rem;
     }
 
-    .dashboard-header h2 {
+    .alert-banner.success {
+      background: rgba(40, 167, 69, 0.2);
+      border: 1px solid rgba(40, 167, 69, 0.5);
+      color: #8ce99a;
+      display: flex;
+    }
+
+    .alert-banner.error {
+      background: rgba(220, 53, 69, 0.2);
+      border: 1px solid rgba(220, 53, 69, 0.5);
+      color: #ff8787;
+      display: flex;
+    }
+
+    .alert-banner .close-alert {
+      background: none;
+      border: none;
+      color: inherit;
+      cursor: pointer;
+      font-size: 1.1rem;
+      line-height: 1;
+    }
+
+    /* Section Header with Actions */
+    .section-header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 1.75rem;
+      padding-bottom: 1.25rem;
+      border-bottom: 1px solid rgba(201, 164, 92, 0.2);
+    }
+
+    .section-header-row h1 {
       font-family: var(--font-serif);
       font-size: 2rem;
       font-weight: 600;
       color: #FFFFFF;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
     }
 
-    .dashboard-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-      background: rgba(40, 167, 69, 0.15);
-      border: 1px solid rgba(40, 167, 69, 0.4);
-      color: #75e892;
-      font-size: 0.78rem;
+    .product-count-badge {
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
       font-weight: 600;
-      padding: 0.35rem 0.85rem;
+      color: var(--color-gold);
+      background: rgba(201, 164, 92, 0.12);
+      border: 1px solid rgba(201, 164, 92, 0.3);
+      padding: 0.2rem 0.65rem;
       border-radius: 20px;
     }
 
-    .dashboard-badge::before {
-      content: "";
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: #28a745;
+    .btn-gold-action {
+      background: linear-gradient(135deg, var(--color-gold) 0%, var(--color-gold-dark) 100%);
+      color: #1a0508;
+      border: none;
+      padding: 0.65rem 1.35rem;
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      border-radius: 6px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 15px rgba(201, 164, 92, 0.25);
+    }
+
+    .btn-gold-action:hover {
+      background: linear-gradient(135deg, var(--color-gold-light) 0%, var(--color-gold) 100%);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(201, 164, 92, 0.4);
+    }
+
+    /* Product Table Container */
+    .table-card {
+      background: var(--color-maroon-deep);
+      border: 1px solid rgba(201, 164, 92, 0.25);
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.4);
+    }
+
+    .table-responsive {
+      width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .admin-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.88rem;
+    }
+
+    .admin-table th {
+      background: #170408;
+      color: var(--color-gold-light);
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      font-size: 0.74rem;
+      padding: 1rem 1.15rem;
+      border-bottom: 1px solid rgba(201, 164, 92, 0.2);
+      white-space: nowrap;
+    }
+
+    .admin-table td {
+      padding: 1rem 1.15rem;
+      border-bottom: 1px solid rgba(201, 164, 92, 0.1);
+      vertical-align: middle;
+      color: #FAF7F2;
+    }
+
+    .admin-table tbody tr:hover {
+      background: rgba(201, 164, 92, 0.04);
+    }
+
+    .prod-thumb {
+      width: 54px;
+      height: 68px;
+      object-fit: cover;
+      border-radius: 4px;
+      border: 1px solid rgba(201, 164, 92, 0.3);
+      background: #100204;
+      display: block;
+    }
+
+    .prod-title {
+      font-weight: 600;
+      color: #FFFFFF;
+      font-size: 0.95rem;
+      margin-bottom: 0.2rem;
+    }
+
+    .prod-slug {
+      font-size: 0.72rem;
+      color: #a89f98;
+    }
+
+    .prod-code {
+      font-family: monospace;
+      font-weight: 600;
+      font-size: 0.85rem;
+      color: var(--color-gold-light);
+      background: rgba(201, 164, 92, 0.1);
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
       display: inline-block;
     }
 
-    .welcome-box {
-      background: rgba(42, 10, 16, 0.7);
-      border: 1px solid rgba(201, 164, 92, 0.2);
-      border-radius: 8px;
-      padding: 2rem;
-      text-align: center;
+    .badge-category {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 600;
+      padding: 0.25rem 0.6rem;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #ebdcd2;
+      display: inline-block;
     }
 
-    .welcome-text {
-      font-size: 1.25rem;
-      margin-bottom: 0.5rem;
-      color: var(--color-cream);
+    .status-pill {
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 0.25rem 0.65rem;
+      border-radius: 20px;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
     }
 
-    .welcome-email {
+    .status-pill.in-stock {
+      background: rgba(40, 167, 69, 0.15);
+      border: 1px solid rgba(40, 167, 69, 0.4);
+      color: #75e892;
+    }
+
+    .status-pill.out-of-stock {
+      background: rgba(220, 53, 69, 0.15);
+      border: 1px solid rgba(220, 53, 69, 0.4);
+      color: #ff8787;
+    }
+
+    .pill-featured {
+      background: rgba(201, 164, 92, 0.15);
+      border: 1px solid rgba(201, 164, 92, 0.4);
+      color: var(--color-gold-light);
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 0.2rem 0.55rem;
+      border-radius: 12px;
+      display: inline-block;
+    }
+
+    .pill-badge {
+      background: rgba(122, 28, 40, 0.35);
+      border: 1px solid rgba(201, 164, 92, 0.3);
+      color: var(--color-gold);
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 0.2rem 0.55rem;
+      border-radius: 12px;
+      display: inline-block;
+      margin-top: 0.25rem;
+    }
+
+    .action-btns {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-edit, .btn-delete {
+      border: none;
+      padding: 0.45rem 0.75rem;
+      border-radius: 4px;
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      transition: all 0.2s ease;
+    }
+
+    .btn-edit {
+      background: rgba(201, 164, 92, 0.15);
+      border: 1px solid rgba(201, 164, 92, 0.4);
+      color: var(--color-gold-light);
+    }
+
+    .btn-edit:hover {
+      background: var(--color-gold);
+      color: #1a0508;
+    }
+
+    .btn-delete {
+      background: rgba(220, 53, 69, 0.15);
+      border: 1px solid rgba(220, 53, 69, 0.4);
+      color: #ff8787;
+    }
+
+    .btn-delete:hover {
+      background: #dc3545;
+      color: #FFFFFF;
+    }
+
+    /* Modal Styling */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(10, 2, 4, 0.85);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      overflow-y: auto;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-dialog {
+      background: #1a0409;
+      border: 1px solid rgba(201, 164, 92, 0.35);
+      border-radius: 12px;
+      width: 100%;
+      max-width: 680px;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.8);
+      animation: modalFadeIn 0.25s ease-out;
+    }
+
+    @keyframes modalFadeIn {
+      from { opacity: 0; transform: translateY(12px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .modal-header {
+      padding: 1.35rem 1.75rem;
+      border-bottom: 1px solid rgba(201, 164, 92, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #20060c;
+      border-top-left-radius: 12px;
+      border-top-right-radius: 12px;
+    }
+
+    .modal-header h3 {
       font-family: var(--font-serif);
       font-size: 1.6rem;
-      color: var(--color-gold);
+      color: #FFFFFF;
+    }
+
+    .modal-close-btn {
+      background: none;
+      border: none;
+      color: var(--color-gold-light);
+      cursor: pointer;
+      font-size: 1.4rem;
+      line-height: 1;
+      padding: 0.25rem;
+    }
+
+    .modal-body {
+      padding: 1.75rem;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .modal-footer {
+      padding: 1.25rem 1.75rem;
+      border-top: 1px solid rgba(201, 164, 92, 0.2);
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.85rem;
+      background: #20060c;
+      border-bottom-left-radius: 12px;
+      border-bottom-right-radius: 12px;
+    }
+
+    /* Form Styles */
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.25rem;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .form-group.full-width {
+      grid-column: 1 / -1;
+    }
+
+    .form-group label {
+      font-size: 0.78rem;
       font-weight: 600;
+      color: var(--color-gold-light);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
     }
 
-    .welcome-sub {
-      margin-top: 1rem;
+    .char-limit {
+      font-size: 0.7rem;
+      color: #a89f98;
+      float: right;
+      text-transform: none;
+      letter-spacing: normal;
+    }
+
+    .form-control {
+      width: 100%;
+      height: 44px;
+      padding: 0.65rem 0.85rem;
+      background: rgba(42, 10, 16, 0.85);
+      border: 1px solid rgba(201, 164, 92, 0.3);
+      border-radius: 6px;
+      color: #FFFFFF;
+      font-family: var(--font-sans);
       font-size: 0.9rem;
-      color: #c5b8b0;
+      transition: all 0.2s ease;
     }
 
-    @media (max-width: 600px) {
+    textarea.form-control {
+      height: auto;
+      min-height: 80px;
+      resize: vertical;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--color-gold);
+      box-shadow: 0 0 0 2px rgba(201, 164, 92, 0.25);
+    }
+
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      padding: 0.5rem 0;
+    }
+
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      font-size: 0.88rem;
+      color: #FAF7F2;
+    }
+
+    .checkbox-label input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--color-gold);
+      cursor: pointer;
+    }
+
+    /* Existing and Uploaded Image Thumbnails */
+    .images-preview-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 0.75rem;
+    }
+
+    .image-thumb-card {
+      position: relative;
+      width: 80px;
+      height: 100px;
+      border-radius: 6px;
+      border: 1px solid rgba(201, 164, 92, 0.4);
+      overflow: hidden;
+      background: #000;
+    }
+
+    .image-thumb-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .image-thumb-card .btn-remove-img {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      background: rgba(220, 53, 69, 0.9);
+      color: #FFFFFF;
+      border: none;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      line-height: 1;
+    }
+
+    .file-upload-box {
+      border: 2px dashed rgba(201, 164, 92, 0.35);
+      border-radius: 8px;
+      padding: 1.25rem;
+      text-align: center;
+      background: rgba(42, 10, 16, 0.4);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+
+    .file-upload-box:hover {
+      border-color: var(--color-gold);
+      background: rgba(42, 10, 16, 0.7);
+    }
+
+    .file-upload-box input[type="file"] {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    .file-upload-label {
+      font-size: 0.82rem;
+      color: var(--color-gold-light);
+      pointer-events: none;
+    }
+
+    .file-upload-hint {
+      font-size: 0.72rem;
+      color: #9f968f;
+      margin-top: 0.25rem;
+      pointer-events: none;
+    }
+
+    .btn-secondary {
+      background: transparent;
+      border: 1px solid rgba(201, 164, 92, 0.3);
+      color: var(--color-cream);
+      padding: 0.65rem 1.25rem;
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: var(--color-gold);
+    }
+
+    /* Mobile adjustments */
+    @media (max-width: 768px) {
       .admin-navbar {
         padding: 0 1rem;
       }
-      .dashboard-card {
-        padding: 1.75rem 1.25rem;
+      .dashboard-container {
+        padding: 1.25rem 1rem 3rem;
       }
-      .nav-actions {
-        gap: 0.65rem;
+      .section-header-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .btn-gold-action {
+        justify-content: center;
+      }
+      .form-grid {
+        grid-template-columns: 1fr;
       }
       .user-info {
         display: none;
@@ -235,7 +701,7 @@
 
   <!-- Admin Navbar -->
   <header class="admin-navbar">
-    <a href="../index.html" class="brand-title" target="_blank" title="View live site">
+    <a href="../index.html" class="brand-title" target="_blank" title="View live storefront">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
         <path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14v1H5z"></path>
       </svg>
@@ -257,86 +723,734 @@
     </div>
   </header>
 
-  <!-- Dashboard Content -->
+  <!-- Dashboard Container -->
   <main class="dashboard-container">
-    <div class="dashboard-card">
-      <div class="dashboard-header">
-        <h2>Admin Overview</h2>
-        <span class="dashboard-badge">Supabase Auth Connected</span>
-      </div>
+    
+    <!-- Notification Banner -->
+    <div id="alert-banner" class="alert-banner" role="alert">
+      <span id="alert-message">Action successful</span>
+      <button type="button" class="close-alert" onclick="dismissAlert()">&times;</button>
+    </div>
 
-      <div class="welcome-box">
-        <p class="welcome-text">Logged in as</p>
-        <div id="display-user-email" class="welcome-email">Loading...</div>
-        <p class="welcome-sub">You have successfully authenticated with the Royal Ethnics administrative portal.</p>
+    <!-- Section Header -->
+    <div class="section-header-row">
+      <div>
+        <h1>
+          Product Catalog
+          <span id="product-count" class="product-count-badge">0 items</span>
+        </h1>
+      </div>
+      <button type="button" id="btn-add-product" class="btn-gold-action">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+        <span>Add Product</span>
+      </button>
+    </div>
+
+    <!-- Products Table -->
+    <div class="table-card">
+      <div class="table-responsive">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Image</th>
+              <th>Product Details</th>
+              <th>Code</th>
+              <th>Category</th>
+              <th>Status</th>
+              <th>Badges</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="products-table-body">
+            <tr>
+              <td colspan="7" style="text-align: center; padding: 3rem; color: #a89f98;">
+                Loading products from Supabase...
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
   </main>
+
+  <!-- Add / Edit Product Modal -->
+  <div id="product-modal" class="modal-overlay">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 id="modal-title">Add New Product</h3>
+        <button type="button" class="modal-close-btn" onclick="closeProductModal()">&times;</button>
+      </div>
+
+      <form id="product-form">
+        <div class="modal-body">
+          <input type="hidden" id="prod-id" name="id">
+          <input type="hidden" id="prod-slug" name="slug">
+
+          <div class="form-grid">
+            <!-- Name (Required, with limit) -->
+            <div class="form-group full-width">
+              <label for="prod-name">
+                Product Name * 
+                <span class="char-limit"><span id="name-count">0</span>/120</span>
+              </label>
+              <input 
+                type="text" 
+                id="prod-name" 
+                name="name" 
+                class="form-control" 
+                maxlength="120" 
+                placeholder="e.g. Maharaja Deep Velvet Sherwani" 
+                required
+              >
+            </div>
+
+            <!-- Code -->
+            <div class="form-group">
+              <label for="prod-code">Product Code (SKU)</label>
+              <input 
+                type="text" 
+                id="prod-code" 
+                name="code" 
+                class="form-control" 
+                placeholder="e.g. RE-SH-03"
+              >
+            </div>
+
+            <!-- Category (Required) -->
+            <div class="form-group">
+              <label for="prod-category">Category *</label>
+              <select id="prod-category" name="category" class="form-control" required>
+                <option value="sherwani">Sherwani</option>
+                <option value="nawabi">Nawabi</option>
+                <option value="indowestern">Indo Western</option>
+                <option value="boys">Boys' Collection</option>
+              </select>
+            </div>
+
+            <!-- Fabric -->
+            <div class="form-group">
+              <label for="prod-fabric">Fabric</label>
+              <input 
+                type="text" 
+                id="prod-fabric" 
+                name="fabric" 
+                class="form-control" 
+                placeholder="e.g. Micro Velvet, Matka Silk"
+              >
+            </div>
+
+            <!-- Age Range (Only for boys) -->
+            <div class="form-group" id="age-range-group" style="display: none;">
+              <label for="prod-age">Age Range (Boys)</label>
+              <input 
+                type="text" 
+                id="prod-age" 
+                name="age_range" 
+                class="form-control" 
+                placeholder="e.g. 2 to 14 Years"
+              >
+            </div>
+
+            <!-- Badge -->
+            <div class="form-group">
+              <label for="prod-badge">Badge (Optional)</label>
+              <input 
+                type="text" 
+                id="prod-badge" 
+                name="badge" 
+                class="form-control" 
+                placeholder="e.g. Best Seller, Groom Choice"
+              >
+            </div>
+
+            <!-- Description (with char limit) -->
+            <div class="form-group full-width">
+              <label for="prod-desc">
+                Description 
+                <span class="char-limit"><span id="desc-count">0</span>/600</span>
+              </label>
+              <textarea 
+                id="prod-desc" 
+                name="description" 
+                class="form-control" 
+                maxlength="600" 
+                rows="3" 
+                placeholder="Detailed description, zardozi work, stole/churidar details..."
+              ></textarea>
+            </div>
+
+            <!-- Checkboxes: Featured & In Stock -->
+            <div class="form-group full-width checkbox-row">
+              <label class="checkbox-label">
+                <input type="checkbox" id="prod-featured" name="is_featured">
+                <span>Featured on Homepage</span>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" id="prod-instock" name="in_stock" checked>
+                <span>In Stock &amp; Available</span>
+              </label>
+            </div>
+
+            <!-- Image Upload & Existing Images -->
+            <div class="form-group full-width">
+              <label>Product Images</label>
+              
+              <!-- File Drag / Browse input -->
+              <div class="file-upload-box">
+                <input type="file" id="prod-images-input" multiple accept="image/*">
+                <div class="file-upload-label">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin: 0 auto 0.4rem; display: block; color: var(--color-gold);">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="17 8 12 3 7 8"></polyline>
+                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                  </svg>
+                  <span>Click or drag photos to upload (Max 1200px auto-compressed)</span>
+                </div>
+                <div class="file-upload-hint">Upload one or multiple images for the gallery.</div>
+              </div>
+
+              <!-- Container for thumbnails (both existing and newly selected) -->
+              <div id="images-preview-list" class="images-preview-grid"></div>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary" onclick="closeProductModal()">Cancel</button>
+          <button type="submit" id="btn-save-product" class="btn-gold-action">
+            <span>Save Product</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
 
   <!-- Supabase JS & Config -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
   <script src="../js/config.js?v=2.3"></script>
 
   <script>
+    let supabase = null;
+    let productsList = [];
+    let currentImageUrls = []; // existing URLs in database
+    let pendingUploadFiles = []; // new files selected by user
+
     document.addEventListener('DOMContentLoaded', async () => {
-      // 1. Verify config
+      // 1. Initialize Supabase
       if (typeof window.supabase === 'undefined' || typeof SUPABASE_URL === 'undefined' || typeof SUPABASE_ANON_KEY === 'undefined') {
         window.location.replace('index.html');
         return;
       }
+      supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-      const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-      // 2. Auth Guard: Verify session
+      // 2. Auth Guard: verify session
       try {
-        const { data: { session }, error } = await client.auth.getSession();
-
+        const { data: { session }, error } = await supabase.auth.getSession();
         if (error || !session || !session.user) {
-          // Not logged in -> Redirect to login page
           window.location.replace('index.html');
           return;
         }
 
-        // Active authenticated user
-        const userEmail = session.user.email || 'Admin';
-        const navEmailEl = document.getElementById('nav-user-email');
-        const displayEmailEl = document.getElementById('display-user-email');
-
-        if (navEmailEl) navEmailEl.textContent = userEmail;
-        if (displayEmailEl) displayEmailEl.textContent = userEmail;
-
-        // Reveal the authenticated page
+        const email = session.user.email || 'Admin';
+        document.getElementById('nav-user-email').textContent = email;
         document.body.classList.add('authenticated');
-
       } catch (err) {
-        console.error('Auth verification error:', err);
+        console.error('Session guard error:', err);
         window.location.replace('index.html');
         return;
       }
 
-      // 3. Logout Handler
-      const logoutBtn = document.getElementById('btn-logout');
-      if (logoutBtn) {
-        logoutBtn.addEventListener('click', async () => {
-          logoutBtn.disabled = true;
-          logoutBtn.innerHTML = '<span>Logging out...</span>';
-          try {
-            await client.auth.signOut();
-          } catch (err) {
-            console.warn('Sign out exception:', err);
-          }
-          window.location.replace('index.html');
-        });
-      }
+      // 3. Logout handler
+      document.getElementById('btn-logout').addEventListener('click', async () => {
+        try {
+          await supabase.auth.signOut();
+        } catch (e) {}
+        window.location.replace('index.html');
+      });
 
-      // 4. Listen to auth state changes (e.g. if token expires or signs out in another tab)
-      client.auth.onAuthStateChange((event, session) => {
-        if (event === 'SIGNED_OUT' || !session) {
-          window.location.replace('index.html');
+      // 4. Setup Form Events
+      setupFormEvents();
+
+      // 5. Load Products
+      await loadProductsTable();
+    });
+
+    // Helper: Resolve image for thumbnail display
+    function resolveImageSrc(url) {
+      if (!url) return '../assets/icons/favicon.svg';
+      if (url.startsWith('http://') || url.startsWith('https://')) return url;
+      const clean = url.replace(/^(\.\.\/|\.\/|\/)/, '');
+      return `../${clean}`;
+    }
+
+    // Load Products Table
+    async function loadProductsTable() {
+      const tbody = document.getElementById('products-table-body');
+      try {
+        const { data, error } = await supabase
+          .from('products')
+          .select('*')
+          .order('id', { ascending: false });
+
+        if (error) throw error;
+
+        productsList = data || [];
+        document.getElementById('product-count').textContent = `${productsList.length} items`;
+
+        if (productsList.length === 0) {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="7" style="text-align: center; padding: 3rem; color: #a89f98;">
+                No products found. Click "Add Product" to create your first item.
+              </td>
+            </tr>
+          `;
+          return;
+        }
+
+        tbody.innerHTML = productsList.map(prod => {
+          const rawImg = (Array.isArray(prod.image_urls) && prod.image_urls.length > 0) ? prod.image_urls[0] : '';
+          const imgSrc = resolveImageSrc(rawImg);
+          const isFeatured = prod.is_featured === true;
+          const inStock = prod.in_stock !== false;
+          
+          return `
+            <tr>
+              <td>
+                <img src="${imgSrc}" alt="${escapeHtml(prod.name)}" class="prod-thumb" loading="lazy">
+              </td>
+              <td>
+                <div class="prod-title">${escapeHtml(prod.name)}</div>
+                <div class="prod-slug">/${escapeHtml(prod.slug)}</div>
+              </td>
+              <td>
+                <span class="prod-code">${escapeHtml(prod.code || '-')}</span>
+              </td>
+              <td>
+                <span class="badge-category">${escapeHtml(prod.category || 'other')}</span>
+              </td>
+              <td>
+                <span class="status-pill ${inStock ? 'in-stock' : 'out-of-stock'}">
+                  ${inStock ? '● In Stock' : '○ Out of Stock'}
+                </span>
+              </td>
+              <td>
+                ${isFeatured ? '<span class="pill-featured">Featured</span>' : ''}
+                ${prod.badge ? `<br><span class="pill-badge">${escapeHtml(prod.badge)}</span>` : ''}
+              </td>
+              <td>
+                <div class="action-btns">
+                  <button type="button" class="btn-edit" onclick="openEditModal('${prod.id}')">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                    </svg>
+                    Edit
+                  </button>
+                  <button type="button" class="btn-delete" onclick="confirmDeleteProduct('${prod.id}', '${escapeHtml(prod.name)}')">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                      <polyline points="3 6 5 6 21 6"></polyline>
+                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                    Delete
+                  </button>
+                </div>
+              </td>
+            </tr>
+          `;
+        }).join('');
+
+      } catch (err) {
+        console.error('Failed to load products:', err);
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="7" style="text-align: center; padding: 2rem; color: #ff8787;">
+              Failed to load products: ${err.message || 'Check database permissions.'}
+            </td>
+          </tr>
+        `;
+      }
+    }
+
+    // Setup Form Interactions
+    function setupFormEvents() {
+      const modal = document.getElementById('product-modal');
+      const addBtn = document.getElementById('btn-add-product');
+      const categorySelect = document.getElementById('prod-category');
+      const ageGroup = document.getElementById('age-range-group');
+      const nameInput = document.getElementById('prod-name');
+      const descInput = document.getElementById('prod-desc');
+      const imagesInput = document.getElementById('prod-images-input');
+      const form = document.getElementById('product-form');
+
+      addBtn.addEventListener('click', () => {
+        openAddModal();
+      });
+
+      // Toggle age range on category change
+      categorySelect.addEventListener('change', () => {
+        if (categorySelect.value === 'boys') {
+          ageGroup.style.display = 'flex';
+        } else {
+          ageGroup.style.display = 'none';
         }
       });
-    });
+
+      // Character counters
+      nameInput.addEventListener('input', () => {
+        document.getElementById('name-count').textContent = nameInput.value.length;
+      });
+
+      descInput.addEventListener('input', () => {
+        document.getElementById('desc-count').textContent = descInput.value.length;
+      });
+
+      // Multiple Image selection
+      imagesInput.addEventListener('change', (e) => {
+        const files = Array.from(e.target.files);
+        if (files.length > 0) {
+          pendingUploadFiles = pendingUploadFiles.concat(files);
+          renderImagesPreview();
+        }
+        imagesInput.value = '';
+      });
+
+      // Form submission
+      form.addEventListener('submit', handleProductSave);
+    }
+
+    function openAddModal() {
+      document.getElementById('modal-title').textContent = 'Add New Product';
+      document.getElementById('product-form').reset();
+      document.getElementById('prod-id').value = '';
+      document.getElementById('prod-slug').value = '';
+      document.getElementById('name-count').textContent = '0';
+      document.getElementById('desc-count').textContent = '0';
+      document.getElementById('prod-instock').checked = true;
+      document.getElementById('prod-featured').checked = false;
+      document.getElementById('age-range-group').style.display = 'none';
+
+      currentImageUrls = [];
+      pendingUploadFiles = [];
+      renderImagesPreview();
+
+      document.getElementById('product-modal').classList.add('active');
+    }
+
+    function openEditModal(prodId) {
+      const prod = productsList.find(p => String(p.id) === String(prodId));
+      if (!prod) return;
+
+      document.getElementById('modal-title').textContent = `Edit Product: ${prod.name}`;
+      document.getElementById('prod-id').value = prod.id;
+      document.getElementById('prod-slug').value = prod.slug;
+      document.getElementById('prod-name').value = prod.name || '';
+      document.getElementById('prod-code').value = prod.code || '';
+      document.getElementById('prod-category').value = prod.category || 'sherwani';
+      document.getElementById('prod-fabric').value = prod.fabric || '';
+      document.getElementById('prod-age').value = prod.age_range || '';
+      document.getElementById('prod-badge').value = prod.badge || '';
+      document.getElementById('prod-desc').value = prod.description || '';
+      document.getElementById('prod-featured').checked = prod.is_featured === true;
+      document.getElementById('prod-instock').checked = prod.in_stock !== false;
+
+      document.getElementById('name-count').textContent = (prod.name || '').length;
+      document.getElementById('desc-count').textContent = (prod.description || '').length;
+
+      const ageGroup = document.getElementById('age-range-group');
+      ageGroup.style.display = prod.category === 'boys' ? 'flex' : 'none';
+
+      currentImageUrls = Array.isArray(prod.image_urls) ? [...prod.image_urls] : [];
+      pendingUploadFiles = [];
+      renderImagesPreview();
+
+      document.getElementById('product-modal').classList.add('active');
+    }
+
+    function closeProductModal() {
+      document.getElementById('product-modal').classList.remove('active');
+    }
+
+    // Render image preview cards
+    function renderImagesPreview() {
+      const container = document.getElementById('images-preview-list');
+      container.innerHTML = '';
+
+      // 1. Existing URLs from database
+      currentImageUrls.forEach((url, idx) => {
+        const card = document.createElement('div');
+        card.className = 'image-thumb-card';
+        card.innerHTML = `
+          <img src="${resolveImageSrc(url)}" alt="Product Image ${idx + 1}">
+          <button type="button" class="btn-remove-img" title="Remove image" onclick="removeExistingImage(${idx})">&times;</button>
+        `;
+        container.appendChild(card);
+      });
+
+      // 2. Pending files chosen in this session
+      pendingUploadFiles.forEach((file, idx) => {
+        const card = document.createElement('div');
+        card.className = 'image-thumb-card';
+        const objectUrl = URL.createObjectURL(file);
+        card.innerHTML = `
+          <img src="${objectUrl}" alt="New Image ${idx + 1}">
+          <button type="button" class="btn-remove-img" title="Remove image" onclick="removePendingFile(${idx})">&times;</button>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    window.removeExistingImage = function(idx) {
+      currentImageUrls.splice(idx, 1);
+      renderImagesPreview();
+    };
+
+    window.removePendingFile = function(idx) {
+      pendingUploadFiles.splice(idx, 1);
+      renderImagesPreview();
+    };
+
+    // Client-side image compression & resizing (Max 1200px width/height, WebP/JPEG)
+    async function compressImage(file, maxWidth = 1200, maxHeight = 1200, quality = 0.85) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (e) => {
+          const img = new Image();
+          img.src = e.target.result;
+          img.onload = () => {
+            let width = img.width;
+            let height = img.height;
+
+            if (width > maxWidth || height > maxHeight) {
+              if (width > height) {
+                height = Math.round((height * maxWidth) / width);
+                width = maxWidth;
+              } else {
+                width = Math.round((width * maxHeight) / height);
+                height = maxHeight;
+              }
+            }
+
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+
+            canvas.toBlob((blob) => {
+              if (blob) {
+                resolve(blob);
+              } else {
+                resolve(file); // fallback to original file
+              }
+            }, 'image/jpeg', quality);
+          };
+          img.onerror = () => resolve(file);
+        };
+        reader.onerror = () => resolve(file);
+      });
+    }
+
+    // Generate unique slug
+    async function generateUniqueSlug(name, excludeId = null) {
+      let base = name
+        .toLowerCase()
+        .trim()
+        .replace(/[^\w\s-]/g, '')
+        .replace(/[\s_-]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+
+      if (!base) base = 'royal-ethnic';
+
+      let slug = base;
+      let counter = 1;
+      let isUnique = false;
+
+      while (!isUnique) {
+        let query = supabase.from('products').select('id').eq('slug', slug);
+        if (excludeId) {
+          query = query.neq('id', excludeId);
+        }
+        const { data } = await query;
+        if (!data || data.length === 0) {
+          isUnique = true;
+        } else {
+          counter++;
+          slug = `${base}-${counter}`;
+        }
+      }
+      return slug;
+    }
+
+    // Save Product (Insert or Update)
+    async function handleProductSave(e) {
+      e.preventDefault();
+      const saveBtn = document.getElementById('btn-save-product');
+      saveBtn.disabled = true;
+      saveBtn.innerHTML = '<span>Saving...</span>';
+
+      try {
+        const id = document.getElementById('prod-id').value;
+        const name = document.getElementById('prod-name').value.trim();
+        const code = document.getElementById('prod-code').value.trim();
+        const category = document.getElementById('prod-category').value;
+        const fabric = document.getElementById('prod-fabric').value.trim();
+        const ageRange = category === 'boys' ? document.getElementById('prod-age').value.trim() : null;
+        const badge = document.getElementById('prod-badge').value.trim() || null;
+        const desc = document.getElementById('prod-desc').value.trim();
+        const isFeatured = document.getElementById('prod-featured').checked;
+        const inStock = document.getElementById('prod-instock').checked;
+
+        if (!name) {
+          showAlert('Please enter a product name.', 'error');
+          saveBtn.disabled = false;
+          saveBtn.innerHTML = '<span>Save Product</span>';
+          return;
+        }
+
+        // 1. Slug calculation
+        let slug = document.getElementById('prod-slug').value;
+        if (!slug || !id) {
+          slug = await generateUniqueSlug(name, id || null);
+        }
+
+        // 2. Upload pending new images to product-images bucket
+        const uploadedUrls = [...currentImageUrls];
+        if (pendingUploadFiles.length > 0) {
+          saveBtn.innerHTML = `<span>Uploading images (0/${pendingUploadFiles.length})...</span>`;
+          
+          for (let i = 0; i < pendingUploadFiles.length; i++) {
+            const file = pendingUploadFiles[i];
+            saveBtn.innerHTML = `<span>Uploading (${i + 1}/${pendingUploadFiles.length})...</span>`;
+            
+            const compressedBlob = await compressImage(file, 1200, 1200, 0.85);
+            const ext = 'jpg';
+            const filename = `${slug}-${Date.now()}-${i + 1}.${ext}`;
+            const filePath = `${filename}`;
+
+            const { data: uploadData, error: uploadErr } = await supabase.storage
+              .from('product-images')
+              .upload(filePath, compressedBlob, {
+                contentType: 'image/jpeg',
+                cacheControl: '3600',
+                upsert: true
+              });
+
+            if (uploadErr) {
+              console.error('Storage upload error:', uploadErr);
+              throw new Error(`Image upload failed: ${uploadErr.message}`);
+            }
+
+            // Get public URL
+            const { data: { publicUrl } } = supabase.storage
+              .from('product-images')
+              .getPublicUrl(filePath);
+
+            uploadedUrls.push(publicUrl);
+          }
+        }
+
+        // 3. Upsert product in Supabase
+        const payload = {
+          name,
+          slug,
+          code: code || null,
+          category,
+          fabric: fabric || null,
+          age_range: ageRange,
+          badge,
+          description: desc || null,
+          is_featured: isFeatured,
+          in_stock: inStock,
+          image_urls: uploadedUrls
+        };
+
+        if (id) {
+          // Update
+          const { error } = await supabase
+            .from('products')
+            .update(payload)
+            .eq('id', id);
+
+          if (error) throw error;
+          showAlert(`"${name}" updated successfully.`, 'success');
+        } else {
+          // Insert
+          const { error } = await supabase
+            .from('products')
+            .insert([payload]);
+
+          if (error) throw error;
+          showAlert(`"${name}" created successfully.`, 'success');
+        }
+
+        closeProductModal();
+        await loadProductsTable();
+
+      } catch (err) {
+        console.error('Error saving product:', err);
+        showAlert(err.message || 'Error occurred while saving product.', 'error');
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = '<span>Save Product</span>';
+      }
+    }
+
+    // Delete Product with Confirmation
+    window.confirmDeleteProduct = async function(prodId, prodName) {
+      const confirmDelete = window.confirm(`Are you sure you want to permanently delete "${prodName}"?\nThis action cannot be undone.`);
+      if (!confirmDelete) return;
+
+      try {
+        const { error } = await supabase
+          .from('products')
+          .delete()
+          .eq('id', prodId);
+
+        if (error) throw error;
+
+        showAlert(`Product "${prodName}" was deleted.`, 'success');
+        await loadProductsTable();
+      } catch (err) {
+        console.error('Error deleting product:', err);
+        showAlert(`Failed to delete: ${err.message || 'Insufficient permissions.'}`, 'error');
+      }
+    };
+
+    // Alert Banner Helper
+    function showAlert(msg, type = 'success') {
+      const banner = document.getElementById('alert-banner');
+      const msgEl = document.getElementById('alert-message');
+      banner.className = `alert-banner ${type}`;
+      msgEl.textContent = msg;
+      banner.style.display = 'flex';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      // Auto dismiss after 6 seconds for success
+      if (type === 'success') {
+        setTimeout(dismissAlert, 6000);
+      }
+    }
+
+    window.dismissAlert = function() {
+      const banner = document.getElementById('alert-banner');
+      if (banner) banner.style.display = 'none';
+    };
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
   </script>
 </body>
 </html>
-
