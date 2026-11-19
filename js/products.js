@@ -200,7 +200,7 @@ async function fetchSupabaseProducts() {
       const { data, error } = await client
         .from('products')
         .select('*')
-        .order('id', { ascending: true });
+        .order('code', { ascending: true });
 
       if (!error && data && data.length > 0) {
         return data;
@@ -381,3 +381,4 @@ document.addEventListener('DOMContentLoaded', () => {
     loadHomepageProducts();
   }
 });
+
