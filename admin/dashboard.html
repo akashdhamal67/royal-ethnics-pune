@@ -41,7 +41,6 @@
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-      opacity: 1; /* Always visible so screen is never blank */
     }
 
     /* Top navbar */
@@ -135,38 +134,25 @@
       padding: 2rem 1.5rem 4rem;
     }
 
-    /* Fatal / Authentication Error Screen */
-    .fatal-error-card {
-      display: none;
-      background: #1c060b;
-      border: 1px solid rgba(220, 53, 69, 0.6);
-      border-radius: 10px;
-      padding: 2.5rem 2rem;
+    /* Loading Screen */
+    .auth-loading-card {
       text-align: center;
-      max-width: 600px;
-      margin: 3rem auto;
-      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
+      padding: 4rem 1rem;
+      color: var(--color-gold-light);
     }
 
-    .fatal-error-card h3 {
-      font-family: var(--font-serif);
-      font-size: 1.8rem;
-      color: #ff8787;
-      margin-bottom: 0.75rem;
+    .auth-spinner {
+      width: 36px;
+      height: 36px;
+      border: 3px solid rgba(201, 164, 92, 0.2);
+      border-top-color: var(--color-gold);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 1.25rem;
     }
 
-    .fatal-error-card p {
-      font-size: 0.95rem;
-      color: #ebdcd2;
-      line-height: 1.6;
-      margin-bottom: 1.75rem;
-    }
-
-    .fatal-error-actions {
-      display: flex;
-      justify-content: center;
-      gap: 1rem;
-      flex-wrap: wrap;
+    @keyframes spin {
+      to { transform: rotate(360deg); }
     }
 
     /* Notification Toasts / Banner */
@@ -604,7 +590,7 @@
       cursor: pointer;
     }
 
-    /* Existing and Uploaded Image Thumbnails */
+    /* Image Thumbnails */
     .images-preview-grid {
       display: flex;
       flex-wrap: wrap;
@@ -728,8 +714,8 @@
 </head>
 <body>
 
-  <!-- Admin Navbar -->
-  <header class="admin-navbar">
+  <!-- Admin Navbar (Hidden by default until session verified) -->
+  <header id="admin-navbar" class="admin-navbar" style="display: none;">
     <a href="../index.html" class="brand-title" target="_blank" title="View live storefront">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
         <path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14v1H5z"></path>
@@ -739,7 +725,7 @@
 
     <div class="nav-actions">
       <div class="user-info">
-        Logged in as <span id="nav-user-email" class="user-email-badge">Authenticating...</span>
+        Logged in as <span id="nav-user-email" class="user-email-badge">Admin</span>
       </div>
       <button type="button" id="btn-logout" class="btn-logout" title="Log out of admin session">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -755,17 +741,14 @@
   <!-- Dashboard Container -->
   <main class="dashboard-container">
     
-    <!-- Fatal / Not Logged In Screen (shown if session is invalid) -->
-    <div id="fatal-error-screen" class="fatal-error-card">
-      <h3 id="fatal-error-title">Authentication Required</h3>
-      <p id="fatal-error-message">You are not logged in or your session has expired. Please sign in to access the admin portal.</p>
-      <div class="fatal-error-actions">
-        <a href="index.html" class="btn-gold-action" style="text-decoration: none;">Go to Login Page</a>
-      </div>
+    <!-- Initial Loading Screen -->
+    <div id="auth-loading-screen" class="auth-loading-card">
+      <div class="auth-spinner"></div>
+      <p>Verifying secure admin session...</p>
     </div>
 
-    <!-- Main Content Area -->
-    <div id="admin-main-content">
+    <!-- Main Content Area (Hidden by default until session verified) -->
+    <div id="admin-main-content" style="display: none;">
       <!-- Notification Banner -->
       <div id="alert-banner" class="alert-banner" role="alert">
         <span id="alert-message">Action successful</span>
@@ -970,42 +953,51 @@
     </div>
   </div>
 
-  <!-- Global Error Handler to catch and display any unexpected JavaScript issue on screen -->
-  <script>
-    window.addEventListener('error', function(event) {
-      console.error('Captured window error:', event.error || event.message);
-      const msg = event.message || (event.error && event.error.message) || 'Unknown script error';
-      showScreenError('Script Error: ' + msg);
-    });
-
-    function showScreenError(msg) {
-      const errScreen = document.getElementById('fatal-error-screen');
-      const errTitle = document.getElementById('fatal-error-title');
-      const errMsg = document.getElementById('fatal-error-message');
-      const mainContent = document.getElementById('admin-main-content');
-      
-      if (errScreen && errTitle && errMsg) {
-        errTitle.textContent = 'Portal Warning';
-        errMsg.textContent = msg;
-        errScreen.style.display = 'block';
-      }
-      if (mainContent) {
-        mainContent.style.display = 'none';
-      }
-    }
-  </script>
-
   <!-- Supabase JS & Config -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
-  <script src="../js/config.js?v=2.4"></script>
+  <script src="../js/config.js?v=2.5"></script>
 
   <script>
     let productsList = [];
     let currentImageUrls = [];
     let pendingUploadFiles = [];
+    let hasActiveSession = false;
 
-    // Global Action Handlers defined on window so inline onclick handlers never fail
-    window.openAddModal = function() {
+    // Redirect to login page immediately
+    function redirectToLogin() {
+      hasActiveSession = false;
+      const loadingScreen = document.getElementById('auth-loading-screen');
+      const navbar = document.getElementById('admin-navbar');
+      const mainContent = document.getElementById('admin-main-content');
+      if (loadingScreen) loadingScreen.style.display = 'none';
+      if (navbar) navbar.style.display = 'none';
+      if (mainContent) mainContent.style.display = 'none';
+      window.location.replace('/admin/index.html');
+    }
+
+    // Guard: Verify current user session before any admin action
+    async function verifySessionOrRedirect() {
+      if (!supabaseClient) {
+        redirectToLogin();
+        return false;
+      }
+      try {
+        const { data: { session }, error } = await supabaseClient.auth.getSession();
+        if (error || !session || !session.user) {
+          redirectToLogin();
+          return false;
+        }
+        return true;
+      } catch (e) {
+        redirectToLogin();
+        return false;
+      }
+    }
+
+    // Global Action Handlers defined on window
+    window.openAddModal = async function() {
+      if (!await verifySessionOrRedirect()) return;
+
       const modal = document.getElementById('product-modal');
       const form = document.getElementById('product-form');
       if (!modal || !form) return;
@@ -1027,7 +1019,9 @@
       modal.classList.add('active');
     };
 
-    window.openEditModal = function(prodId) {
+    window.openEditModal = async function(prodId) {
+      if (!await verifySessionOrRedirect()) return;
+
       const prod = productsList.find(p => String(p.id) === String(prodId));
       if (!prod) return;
 
@@ -1141,7 +1135,7 @@
       });
     }
 
-    // Client-side image compression & resizing (Max 1200px width/height)
+    // Client-side image compression & resizing (Max 1200px)
     async function compressImage(file, maxWidth = 1200, maxHeight = 1200, quality = 0.85) {
       return new Promise((resolve) => {
         const reader = new FileReader();
@@ -1214,8 +1208,9 @@
       return slug;
     }
 
-    // Load Products Table
+    // Load Products Table (only runs when session is active)
     async function loadProductsTable() {
+      if (!hasActiveSession) return;
       const tbody = document.getElementById('products-table-body');
       if (!tbody) return;
 
@@ -1309,6 +1304,8 @@
     // Save Product
     async function handleProductSave(e) {
       e.preventDefault();
+      if (!await verifySessionOrRedirect()) return;
+
       const saveBtn = document.getElementById('btn-save-product');
       if (saveBtn) {
         saveBtn.disabled = true;
@@ -1424,6 +1421,8 @@
 
     // Delete Product
     window.confirmDeleteProduct = async function(prodId, prodName) {
+      if (!await verifySessionOrRedirect()) return;
+
       const confirmDelete = window.confirm(`Are you sure you want to permanently delete "${prodName}"?\nThis action cannot be undone.`);
       if (!confirmDelete) return;
 
@@ -1489,9 +1488,9 @@
       if (form) form.addEventListener('submit', handleProductSave);
     }
 
-    // Main App Initialization with graceful fallback and screen messages
-    async function initDashboard() {
-      // 1. Ensure Supabase Client is initialized
+    // Main Dashboard Session Guard & Initializer
+    async function checkAuthAndInitDashboard() {
+      // 1. Ensure Supabase Client exists
       if (!supabaseClient && typeof window.supabase !== 'undefined' && typeof SUPABASE_URL !== 'undefined' && typeof SUPABASE_ANON_KEY !== 'undefined') {
         try {
           supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -1499,44 +1498,38 @@
       }
 
       if (!supabaseClient) {
-        showScreenError('Supabase client failed to initialize. Please check your network connection and js/config.js.');
+        redirectToLogin();
         return;
       }
 
-      // 2. Auth Guard: Verify active session
+      // 2. Auth Guard: Call getSession()
       try {
-        const { data, error } = await supabaseClient.auth.getSession();
+        const { data: { session }, error } = await supabaseClient.auth.getSession();
 
-        if (error) {
-          console.error('Session retrieval error:', error);
-          showScreenError('Authentication error: ' + error.message + '. Please login again.');
-          setTimeout(() => { window.location.replace('index.html'); }, 2000);
+        if (error || !session || !session.user) {
+          redirectToLogin();
           return;
         }
 
-        const session = data ? data.session : null;
-        if (!session || !session.user) {
-          // Unauthenticated -> Show prompt and redirect
-          const errScreen = document.getElementById('fatal-error-screen');
-          const mainContent = document.getElementById('admin-main-content');
-          if (errScreen) errScreen.style.display = 'block';
-          if (mainContent) mainContent.style.display = 'none';
+        // Active session verified!
+        hasActiveSession = true;
 
-          setTimeout(() => {
-            window.location.replace('index.html');
-          }, 1500);
-          return;
-        }
-
-        // Authenticated! Show user email in top nav
         const email = session.user.email || 'Admin';
         const navEmail = document.getElementById('nav-user-email');
         if (navEmail) navEmail.textContent = email;
 
+        // Reveal dashboard UI and hide loading spinner
+        const loadingScreen = document.getElementById('auth-loading-screen');
+        const navbar = document.getElementById('admin-navbar');
+        const mainContent = document.getElementById('admin-main-content');
+
+        if (loadingScreen) loadingScreen.style.display = 'none';
+        if (navbar) navbar.style.display = 'flex';
+        if (mainContent) mainContent.style.display = 'block';
+
       } catch (err) {
-        console.error('Session guard exception:', err);
-        showScreenError('Authentication verification failed: ' + (err.message || err));
-        setTimeout(() => { window.location.replace('index.html'); }, 2000);
+        console.error('Session guard error:', err);
+        redirectToLogin();
         return;
       }
 
@@ -1548,9 +1541,13 @@
             logoutBtn.disabled = true;
             logoutBtn.innerHTML = '<span>Logging out...</span>';
             try {
+              // Wait for signOut() to finish completely
               await supabaseClient.auth.signOut();
-            } catch (e) {}
-            window.location.replace('index.html');
+            } catch (e) {
+              console.warn('SignOut exception:', e);
+            }
+            // Then redirect to login page
+            redirectToLogin();
           });
         }
 
@@ -1562,20 +1559,27 @@
       // 4. Load Products Table
       await loadProductsTable();
 
-      // 5. Auth State Change Listener
+      // 5. Auth State Change Listener (redirects if signed out anywhere)
       supabaseClient.auth.onAuthStateChange((event, session) => {
         if (event === 'SIGNED_OUT' || !session) {
-          window.location.replace('index.html');
+          redirectToLogin();
         }
       });
     }
 
-    // Robust document ready execution (works whether loaded before or after DOMContentLoaded)
+    // Run on initial load
     if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', initDashboard);
+      document.addEventListener('DOMContentLoaded', checkAuthAndInitDashboard);
     } else {
-      initDashboard();
+      checkAuthAndInitDashboard();
     }
+
+    // 6. Handle browser Back/Forward cache (BFCache): Re-verify auth when page is restored
+    window.addEventListener('pageshow', (event) => {
+      if (event.persisted) {
+        checkAuthAndInitDashboard();
+      }
+    });
   </script>
 </body>
 </html>
