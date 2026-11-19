@@ -41,12 +41,7 @@
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-      opacity: 0;
-      transition: opacity 0.25s ease-in;
-    }
-
-    body.authenticated {
-      opacity: 1;
+      opacity: 1; /* Always visible so screen is never blank */
     }
 
     /* Top navbar */
@@ -140,6 +135,40 @@
       padding: 2rem 1.5rem 4rem;
     }
 
+    /* Fatal / Authentication Error Screen */
+    .fatal-error-card {
+      display: none;
+      background: #1c060b;
+      border: 1px solid rgba(220, 53, 69, 0.6);
+      border-radius: 10px;
+      padding: 2.5rem 2rem;
+      text-align: center;
+      max-width: 600px;
+      margin: 3rem auto;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
+    }
+
+    .fatal-error-card h3 {
+      font-family: var(--font-serif);
+      font-size: 1.8rem;
+      color: #ff8787;
+      margin-bottom: 0.75rem;
+    }
+
+    .fatal-error-card p {
+      font-size: 0.95rem;
+      color: #ebdcd2;
+      line-height: 1.6;
+      margin-bottom: 1.75rem;
+    }
+
+    .fatal-error-actions {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
     /* Notification Toasts / Banner */
     .alert-banner {
       padding: 0.85rem 1.25rem;
@@ -160,9 +189,9 @@
     }
 
     .alert-banner.error {
-      background: rgba(220, 53, 69, 0.2);
-      border: 1px solid rgba(220, 53, 69, 0.5);
-      color: #ff8787;
+      background: rgba(220, 53, 69, 0.25);
+      border: 1px solid rgba(220, 53, 69, 0.6);
+      color: #ffb4be;
       display: flex;
     }
 
@@ -171,7 +200,7 @@
       border: none;
       color: inherit;
       cursor: pointer;
-      font-size: 1.1rem;
+      font-size: 1.2rem;
       line-height: 1;
     }
 
@@ -710,7 +739,7 @@
 
     <div class="nav-actions">
       <div class="user-info">
-        Logged in as <span id="nav-user-email" class="user-email-badge">Loading...</span>
+        Logged in as <span id="nav-user-email" class="user-email-badge">Authenticating...</span>
       </div>
       <button type="button" id="btn-logout" class="btn-logout" title="Log out of admin session">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -726,52 +755,64 @@
   <!-- Dashboard Container -->
   <main class="dashboard-container">
     
-    <!-- Notification Banner -->
-    <div id="alert-banner" class="alert-banner" role="alert">
-      <span id="alert-message">Action successful</span>
-      <button type="button" class="close-alert" onclick="dismissAlert()">&times;</button>
-    </div>
-
-    <!-- Section Header -->
-    <div class="section-header-row">
-      <div>
-        <h1>
-          Product Catalog
-          <span id="product-count" class="product-count-badge">0 items</span>
-        </h1>
+    <!-- Fatal / Not Logged In Screen (shown if session is invalid) -->
+    <div id="fatal-error-screen" class="fatal-error-card">
+      <h3 id="fatal-error-title">Authentication Required</h3>
+      <p id="fatal-error-message">You are not logged in or your session has expired. Please sign in to access the admin portal.</p>
+      <div class="fatal-error-actions">
+        <a href="index.html" class="btn-gold-action" style="text-decoration: none;">Go to Login Page</a>
       </div>
-      <button type="button" id="btn-add-product" class="btn-gold-action">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="12" y1="5" x2="12" y2="19"></line>
-          <line x1="5" y1="12" x2="19" y2="12"></line>
-        </svg>
-        <span>Add Product</span>
-      </button>
     </div>
 
-    <!-- Products Table -->
-    <div class="table-card">
-      <div class="table-responsive">
-        <table class="admin-table">
-          <thead>
-            <tr>
-              <th>Image</th>
-              <th>Product Details</th>
-              <th>Code</th>
-              <th>Category</th>
-              <th>Status</th>
-              <th>Badges</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody id="products-table-body">
-            <tr>
-              <td colspan="7" style="text-align: center; padding: 3rem; color: #a89f98;">
-                Loading products from Supabase...
-              </td>
-            </tr>
-          </tbody>
-        </table>
+    <!-- Main Content Area -->
+    <div id="admin-main-content">
+      <!-- Notification Banner -->
+      <div id="alert-banner" class="alert-banner" role="alert">
+        <span id="alert-message">Action successful</span>
+        <button type="button" class="close-alert" onclick="dismissAlert()">&times;</button>
+      </div>
+
+      <!-- Section Header -->
+      <div class="section-header-row">
+        <div>
+          <h1>
+            Product Catalog
+            <span id="product-count" class="product-count-badge">0 items</span>
+          </h1>
+        </div>
+        <button type="button" id="btn-add-product" class="btn-gold-action">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          <span>Add Product</span>
+        </button>
+      </div>
+
+      <!-- Products Table -->
+      <div class="table-card">
+        <div class="table-responsive">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Image</th>
+                <th>Product Details</th>
+                <th>Code</th>
+                <th>Category</th>
+                <th>Status</th>
+                <th>Badges</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="products-table-body">
+              <tr>
+                <td colspan="7" style="text-align: center; padding: 3rem; color: #a89f98;">
+                  Loading products from Supabase...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </main>
@@ -929,57 +970,141 @@
     </div>
   </div>
 
+  <!-- Global Error Handler to catch and display any unexpected JavaScript issue on screen -->
+  <script>
+    window.addEventListener('error', function(event) {
+      console.error('Captured window error:', event.error || event.message);
+      const msg = event.message || (event.error && event.error.message) || 'Unknown script error';
+      showScreenError('Script Error: ' + msg);
+    });
+
+    function showScreenError(msg) {
+      const errScreen = document.getElementById('fatal-error-screen');
+      const errTitle = document.getElementById('fatal-error-title');
+      const errMsg = document.getElementById('fatal-error-message');
+      const mainContent = document.getElementById('admin-main-content');
+      
+      if (errScreen && errTitle && errMsg) {
+        errTitle.textContent = 'Portal Warning';
+        errMsg.textContent = msg;
+        errScreen.style.display = 'block';
+      }
+      if (mainContent) {
+        mainContent.style.display = 'none';
+      }
+    }
+  </script>
+
   <!-- Supabase JS & Config -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
-  <script src="../js/config.js?v=2.3"></script>
+  <script src="../js/config.js?v=2.4"></script>
 
   <script>
     let supabase = null;
     let productsList = [];
-    let currentImageUrls = []; // existing URLs in database
-    let pendingUploadFiles = []; // new files selected by user
+    let currentImageUrls = [];
+    let pendingUploadFiles = [];
 
-    document.addEventListener('DOMContentLoaded', async () => {
-      // 1. Initialize Supabase
-      if (typeof window.supabase === 'undefined' || typeof SUPABASE_URL === 'undefined' || typeof SUPABASE_ANON_KEY === 'undefined') {
-        window.location.replace('index.html');
-        return;
+    // Global Action Handlers defined on window so inline onclick handlers never fail
+    window.openAddModal = function() {
+      const modal = document.getElementById('product-modal');
+      const form = document.getElementById('product-form');
+      if (!modal || !form) return;
+
+      document.getElementById('modal-title').textContent = 'Add New Product';
+      form.reset();
+      document.getElementById('prod-id').value = '';
+      document.getElementById('prod-slug').value = '';
+      document.getElementById('name-count').textContent = '0';
+      document.getElementById('desc-count').textContent = '0';
+      document.getElementById('prod-instock').checked = true;
+      document.getElementById('prod-featured').checked = false;
+      document.getElementById('age-range-group').style.display = 'none';
+
+      currentImageUrls = [];
+      pendingUploadFiles = [];
+      renderImagesPreview();
+
+      modal.classList.add('active');
+    };
+
+    window.openEditModal = function(prodId) {
+      const prod = productsList.find(p => String(p.id) === String(prodId));
+      if (!prod) return;
+
+      const modal = document.getElementById('product-modal');
+      if (!modal) return;
+
+      document.getElementById('modal-title').textContent = `Edit Product: ${prod.name}`;
+      document.getElementById('prod-id').value = prod.id;
+      document.getElementById('prod-slug').value = prod.slug;
+      document.getElementById('prod-name').value = prod.name || '';
+      document.getElementById('prod-code').value = prod.code || '';
+      document.getElementById('prod-category').value = prod.category || 'sherwani';
+      document.getElementById('prod-fabric').value = prod.fabric || '';
+      document.getElementById('prod-age').value = prod.age_range || '';
+      document.getElementById('prod-badge').value = prod.badge || '';
+      document.getElementById('prod-desc').value = prod.description || '';
+      document.getElementById('prod-featured').checked = prod.is_featured === true;
+      document.getElementById('prod-instock').checked = prod.in_stock !== false;
+
+      document.getElementById('name-count').textContent = (prod.name || '').length;
+      document.getElementById('desc-count').textContent = (prod.description || '').length;
+
+      const ageGroup = document.getElementById('age-range-group');
+      ageGroup.style.display = prod.category === 'boys' ? 'flex' : 'none';
+
+      currentImageUrls = Array.isArray(prod.image_urls) ? [...prod.image_urls] : [];
+      pendingUploadFiles = [];
+      renderImagesPreview();
+
+      modal.classList.add('active');
+    };
+
+    window.closeProductModal = function() {
+      const modal = document.getElementById('product-modal');
+      if (modal) modal.classList.remove('active');
+    };
+
+    window.removeExistingImage = function(idx) {
+      currentImageUrls.splice(idx, 1);
+      renderImagesPreview();
+    };
+
+    window.removePendingFile = function(idx) {
+      pendingUploadFiles.splice(idx, 1);
+      renderImagesPreview();
+    };
+
+    window.dismissAlert = function() {
+      const banner = document.getElementById('alert-banner');
+      if (banner) banner.style.display = 'none';
+    };
+
+    window.showAlert = function(msg, type = 'success') {
+      const banner = document.getElementById('alert-banner');
+      const msgEl = document.getElementById('alert-message');
+      if (!banner || !msgEl) return;
+      banner.className = `alert-banner ${type}`;
+      msgEl.textContent = msg;
+      banner.style.display = 'flex';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      if (type === 'success') {
+        setTimeout(window.dismissAlert, 6000);
       }
-      supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    };
 
-      // 2. Auth Guard: verify session
-      try {
-        const { data: { session }, error } = await supabase.auth.getSession();
-        if (error || !session || !session.user) {
-          window.location.replace('index.html');
-          return;
-        }
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
 
-        const email = session.user.email || 'Admin';
-        document.getElementById('nav-user-email').textContent = email;
-        document.body.classList.add('authenticated');
-      } catch (err) {
-        console.error('Session guard error:', err);
-        window.location.replace('index.html');
-        return;
-      }
-
-      // 3. Logout handler
-      document.getElementById('btn-logout').addEventListener('click', async () => {
-        try {
-          await supabase.auth.signOut();
-        } catch (e) {}
-        window.location.replace('index.html');
-      });
-
-      // 4. Setup Form Events
-      setupFormEvents();
-
-      // 5. Load Products
-      await loadProductsTable();
-    });
-
-    // Helper: Resolve image for thumbnail display
     function resolveImageSrc(url) {
       if (!url) return '../assets/icons/favicon.svg';
       if (url.startsWith('http://') || url.startsWith('https://')) return url;
@@ -987,9 +1112,114 @@
       return `../${clean}`;
     }
 
+    // Render image preview cards
+    function renderImagesPreview() {
+      const container = document.getElementById('images-preview-list');
+      if (!container) return;
+      container.innerHTML = '';
+
+      // Existing URLs
+      currentImageUrls.forEach((url, idx) => {
+        const card = document.createElement('div');
+        card.className = 'image-thumb-card';
+        card.innerHTML = `
+          <img src="${resolveImageSrc(url)}" alt="Product Image ${idx + 1}">
+          <button type="button" class="btn-remove-img" title="Remove image" onclick="removeExistingImage(${idx})">&times;</button>
+        `;
+        container.appendChild(card);
+      });
+
+      // Pending uploaded files
+      pendingUploadFiles.forEach((file, idx) => {
+        const card = document.createElement('div');
+        card.className = 'image-thumb-card';
+        const objectUrl = URL.createObjectURL(file);
+        card.innerHTML = `
+          <img src="${objectUrl}" alt="New Image ${idx + 1}">
+          <button type="button" class="btn-remove-img" title="Remove image" onclick="removePendingFile(${idx})">&times;</button>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    // Client-side image compression & resizing (Max 1200px width/height)
+    async function compressImage(file, maxWidth = 1200, maxHeight = 1200, quality = 0.85) {
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (e) => {
+          const img = new Image();
+          img.src = e.target.result;
+          img.onload = () => {
+            let width = img.width;
+            let height = img.height;
+
+            if (width > maxWidth || height > maxHeight) {
+              if (width > height) {
+                height = Math.round((height * maxWidth) / width);
+                width = maxWidth;
+              } else {
+                width = Math.round((width * maxHeight) / height);
+                height = maxHeight;
+              }
+            }
+
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+
+            canvas.toBlob((blob) => {
+              if (blob) {
+                resolve(blob);
+              } else {
+                resolve(file);
+              }
+            }, 'image/jpeg', quality);
+          };
+          img.onerror = () => resolve(file);
+        };
+        reader.onerror = () => resolve(file);
+      });
+    }
+
+    // Generate unique slug
+    async function generateUniqueSlug(name, excludeId = null) {
+      let base = name
+        .toLowerCase()
+        .trim()
+        .replace(/[^\w\s-]/g, '')
+        .replace(/[\s_-]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+
+      if (!base) base = 'royal-ethnic';
+
+      let slug = base;
+      let counter = 1;
+      let isUnique = false;
+
+      while (!isUnique) {
+        let query = supabase.from('products').select('id').eq('slug', slug);
+        if (excludeId) {
+          query = query.neq('id', excludeId);
+        }
+        const { data, error } = await query;
+        if (error || !data || data.length === 0) {
+          isUnique = true;
+        } else {
+          counter++;
+          slug = `${base}-${counter}`;
+        }
+      }
+      return slug;
+    }
+
     // Load Products Table
     async function loadProductsTable() {
       const tbody = document.getElementById('products-table-body');
+      if (!tbody) return;
+
       try {
         const { data, error } = await supabase
           .from('products')
@@ -999,7 +1229,8 @@
         if (error) throw error;
 
         productsList = data || [];
-        document.getElementById('product-count').textContent = `${productsList.length} items`;
+        const countEl = document.getElementById('product-count');
+        if (countEl) countEl.textContent = `${productsList.length} items`;
 
         if (productsList.length === 0) {
           tbody.innerHTML = `
@@ -1076,223 +1307,14 @@
       }
     }
 
-    // Setup Form Interactions
-    function setupFormEvents() {
-      const modal = document.getElementById('product-modal');
-      const addBtn = document.getElementById('btn-add-product');
-      const categorySelect = document.getElementById('prod-category');
-      const ageGroup = document.getElementById('age-range-group');
-      const nameInput = document.getElementById('prod-name');
-      const descInput = document.getElementById('prod-desc');
-      const imagesInput = document.getElementById('prod-images-input');
-      const form = document.getElementById('product-form');
-
-      addBtn.addEventListener('click', () => {
-        openAddModal();
-      });
-
-      // Toggle age range on category change
-      categorySelect.addEventListener('change', () => {
-        if (categorySelect.value === 'boys') {
-          ageGroup.style.display = 'flex';
-        } else {
-          ageGroup.style.display = 'none';
-        }
-      });
-
-      // Character counters
-      nameInput.addEventListener('input', () => {
-        document.getElementById('name-count').textContent = nameInput.value.length;
-      });
-
-      descInput.addEventListener('input', () => {
-        document.getElementById('desc-count').textContent = descInput.value.length;
-      });
-
-      // Multiple Image selection
-      imagesInput.addEventListener('change', (e) => {
-        const files = Array.from(e.target.files);
-        if (files.length > 0) {
-          pendingUploadFiles = pendingUploadFiles.concat(files);
-          renderImagesPreview();
-        }
-        imagesInput.value = '';
-      });
-
-      // Form submission
-      form.addEventListener('submit', handleProductSave);
-    }
-
-    function openAddModal() {
-      document.getElementById('modal-title').textContent = 'Add New Product';
-      document.getElementById('product-form').reset();
-      document.getElementById('prod-id').value = '';
-      document.getElementById('prod-slug').value = '';
-      document.getElementById('name-count').textContent = '0';
-      document.getElementById('desc-count').textContent = '0';
-      document.getElementById('prod-instock').checked = true;
-      document.getElementById('prod-featured').checked = false;
-      document.getElementById('age-range-group').style.display = 'none';
-
-      currentImageUrls = [];
-      pendingUploadFiles = [];
-      renderImagesPreview();
-
-      document.getElementById('product-modal').classList.add('active');
-    }
-
-    function openEditModal(prodId) {
-      const prod = productsList.find(p => String(p.id) === String(prodId));
-      if (!prod) return;
-
-      document.getElementById('modal-title').textContent = `Edit Product: ${prod.name}`;
-      document.getElementById('prod-id').value = prod.id;
-      document.getElementById('prod-slug').value = prod.slug;
-      document.getElementById('prod-name').value = prod.name || '';
-      document.getElementById('prod-code').value = prod.code || '';
-      document.getElementById('prod-category').value = prod.category || 'sherwani';
-      document.getElementById('prod-fabric').value = prod.fabric || '';
-      document.getElementById('prod-age').value = prod.age_range || '';
-      document.getElementById('prod-badge').value = prod.badge || '';
-      document.getElementById('prod-desc').value = prod.description || '';
-      document.getElementById('prod-featured').checked = prod.is_featured === true;
-      document.getElementById('prod-instock').checked = prod.in_stock !== false;
-
-      document.getElementById('name-count').textContent = (prod.name || '').length;
-      document.getElementById('desc-count').textContent = (prod.description || '').length;
-
-      const ageGroup = document.getElementById('age-range-group');
-      ageGroup.style.display = prod.category === 'boys' ? 'flex' : 'none';
-
-      currentImageUrls = Array.isArray(prod.image_urls) ? [...prod.image_urls] : [];
-      pendingUploadFiles = [];
-      renderImagesPreview();
-
-      document.getElementById('product-modal').classList.add('active');
-    }
-
-    function closeProductModal() {
-      document.getElementById('product-modal').classList.remove('active');
-    }
-
-    // Render image preview cards
-    function renderImagesPreview() {
-      const container = document.getElementById('images-preview-list');
-      container.innerHTML = '';
-
-      // 1. Existing URLs from database
-      currentImageUrls.forEach((url, idx) => {
-        const card = document.createElement('div');
-        card.className = 'image-thumb-card';
-        card.innerHTML = `
-          <img src="${resolveImageSrc(url)}" alt="Product Image ${idx + 1}">
-          <button type="button" class="btn-remove-img" title="Remove image" onclick="removeExistingImage(${idx})">&times;</button>
-        `;
-        container.appendChild(card);
-      });
-
-      // 2. Pending files chosen in this session
-      pendingUploadFiles.forEach((file, idx) => {
-        const card = document.createElement('div');
-        card.className = 'image-thumb-card';
-        const objectUrl = URL.createObjectURL(file);
-        card.innerHTML = `
-          <img src="${objectUrl}" alt="New Image ${idx + 1}">
-          <button type="button" class="btn-remove-img" title="Remove image" onclick="removePendingFile(${idx})">&times;</button>
-        `;
-        container.appendChild(card);
-      });
-    }
-
-    window.removeExistingImage = function(idx) {
-      currentImageUrls.splice(idx, 1);
-      renderImagesPreview();
-    };
-
-    window.removePendingFile = function(idx) {
-      pendingUploadFiles.splice(idx, 1);
-      renderImagesPreview();
-    };
-
-    // Client-side image compression & resizing (Max 1200px width/height, WebP/JPEG)
-    async function compressImage(file, maxWidth = 1200, maxHeight = 1200, quality = 0.85) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = (e) => {
-          const img = new Image();
-          img.src = e.target.result;
-          img.onload = () => {
-            let width = img.width;
-            let height = img.height;
-
-            if (width > maxWidth || height > maxHeight) {
-              if (width > height) {
-                height = Math.round((height * maxWidth) / width);
-                width = maxWidth;
-              } else {
-                width = Math.round((width * maxHeight) / height);
-                height = maxHeight;
-              }
-            }
-
-            const canvas = document.createElement('canvas');
-            canvas.width = width;
-            canvas.height = height;
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0, width, height);
-
-            canvas.toBlob((blob) => {
-              if (blob) {
-                resolve(blob);
-              } else {
-                resolve(file); // fallback to original file
-              }
-            }, 'image/jpeg', quality);
-          };
-          img.onerror = () => resolve(file);
-        };
-        reader.onerror = () => resolve(file);
-      });
-    }
-
-    // Generate unique slug
-    async function generateUniqueSlug(name, excludeId = null) {
-      let base = name
-        .toLowerCase()
-        .trim()
-        .replace(/[^\w\s-]/g, '')
-        .replace(/[\s_-]+/g, '-')
-        .replace(/^-+|-+$/g, '');
-
-      if (!base) base = 'royal-ethnic';
-
-      let slug = base;
-      let counter = 1;
-      let isUnique = false;
-
-      while (!isUnique) {
-        let query = supabase.from('products').select('id').eq('slug', slug);
-        if (excludeId) {
-          query = query.neq('id', excludeId);
-        }
-        const { data } = await query;
-        if (!data || data.length === 0) {
-          isUnique = true;
-        } else {
-          counter++;
-          slug = `${base}-${counter}`;
-        }
-      }
-      return slug;
-    }
-
-    // Save Product (Insert or Update)
+    // Save Product
     async function handleProductSave(e) {
       e.preventDefault();
       const saveBtn = document.getElementById('btn-save-product');
-      saveBtn.disabled = true;
-      saveBtn.innerHTML = '<span>Saving...</span>';
+      if (saveBtn) {
+        saveBtn.disabled = true;
+        saveBtn.innerHTML = '<span>Saving...</span>';
+      }
 
       try {
         const id = document.getElementById('prod-id').value;
@@ -1308,32 +1330,34 @@
 
         if (!name) {
           showAlert('Please enter a product name.', 'error');
-          saveBtn.disabled = false;
-          saveBtn.innerHTML = '<span>Save Product</span>';
+          if (saveBtn) {
+            saveBtn.disabled = false;
+            saveBtn.innerHTML = '<span>Save Product</span>';
+          }
           return;
         }
 
-        // 1. Slug calculation
+        // Slug
         let slug = document.getElementById('prod-slug').value;
         if (!slug || !id) {
           slug = await generateUniqueSlug(name, id || null);
         }
 
-        // 2. Upload pending new images to product-images bucket
+        // Upload new images to product-images bucket
         const uploadedUrls = [...currentImageUrls];
         if (pendingUploadFiles.length > 0) {
-          saveBtn.innerHTML = `<span>Uploading images (0/${pendingUploadFiles.length})...</span>`;
+          if (saveBtn) saveBtn.innerHTML = `<span>Uploading images (0/${pendingUploadFiles.length})...</span>`;
           
           for (let i = 0; i < pendingUploadFiles.length; i++) {
             const file = pendingUploadFiles[i];
-            saveBtn.innerHTML = `<span>Uploading (${i + 1}/${pendingUploadFiles.length})...</span>`;
+            if (saveBtn) saveBtn.innerHTML = `<span>Uploading (${i + 1}/${pendingUploadFiles.length})...</span>`;
             
             const compressedBlob = await compressImage(file, 1200, 1200, 0.85);
             const ext = 'jpg';
             const filename = `${slug}-${Date.now()}-${i + 1}.${ext}`;
             const filePath = `${filename}`;
 
-            const { data: uploadData, error: uploadErr } = await supabase.storage
+            const { error: uploadErr } = await supabase.storage
               .from('product-images')
               .upload(filePath, compressedBlob, {
                 contentType: 'image/jpeg',
@@ -1346,7 +1370,6 @@
               throw new Error(`Image upload failed: ${uploadErr.message}`);
             }
 
-            // Get public URL
             const { data: { publicUrl } } = supabase.storage
               .from('product-images')
               .getPublicUrl(filePath);
@@ -1355,7 +1378,6 @@
           }
         }
 
-        // 3. Upsert product in Supabase
         const payload = {
           name,
           slug,
@@ -1371,7 +1393,6 @@
         };
 
         if (id) {
-          // Update
           const { error } = await supabase
             .from('products')
             .update(payload)
@@ -1380,7 +1401,6 @@
           if (error) throw error;
           showAlert(`"${name}" updated successfully.`, 'success');
         } else {
-          // Insert
           const { error } = await supabase
             .from('products')
             .insert([payload]);
@@ -1396,12 +1416,14 @@
         console.error('Error saving product:', err);
         showAlert(err.message || 'Error occurred while saving product.', 'error');
       } finally {
-        saveBtn.disabled = false;
-        saveBtn.innerHTML = '<span>Save Product</span>';
+        if (saveBtn) {
+          saveBtn.disabled = false;
+          saveBtn.innerHTML = '<span>Save Product</span>';
+        }
       }
     }
 
-    // Delete Product with Confirmation
+    // Delete Product
     window.confirmDeleteProduct = async function(prodId, prodName) {
       const confirmDelete = window.confirm(`Are you sure you want to permanently delete "${prodName}"?\nThis action cannot be undone.`);
       if (!confirmDelete) return;
@@ -1422,34 +1444,144 @@
       }
     };
 
-    // Alert Banner Helper
-    function showAlert(msg, type = 'success') {
-      const banner = document.getElementById('alert-banner');
-      const msgEl = document.getElementById('alert-message');
-      banner.className = `alert-banner ${type}`;
-      msgEl.textContent = msg;
-      banner.style.display = 'flex';
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+    // Setup Form Listeners
+    function setupFormEvents() {
+      const addBtn = document.getElementById('btn-add-product');
+      const categorySelect = document.getElementById('prod-category');
+      const ageGroup = document.getElementById('age-range-group');
+      const nameInput = document.getElementById('prod-name');
+      const descInput = document.getElementById('prod-desc');
+      const imagesInput = document.getElementById('prod-images-input');
+      const form = document.getElementById('product-form');
 
-      // Auto dismiss after 6 seconds for success
-      if (type === 'success') {
-        setTimeout(dismissAlert, 6000);
+      if (addBtn) addBtn.addEventListener('click', window.openAddModal);
+
+      if (categorySelect && ageGroup) {
+        categorySelect.addEventListener('change', () => {
+          ageGroup.style.display = categorySelect.value === 'boys' ? 'flex' : 'none';
+        });
       }
+
+      if (nameInput) {
+        nameInput.addEventListener('input', () => {
+          const countEl = document.getElementById('name-count');
+          if (countEl) countEl.textContent = nameInput.value.length;
+        });
+      }
+
+      if (descInput) {
+        descInput.addEventListener('input', () => {
+          const countEl = document.getElementById('desc-count');
+          if (countEl) countEl.textContent = descInput.value.length;
+        });
+      }
+
+      if (imagesInput) {
+        imagesInput.addEventListener('change', (e) => {
+          const files = Array.from(e.target.files);
+          if (files.length > 0) {
+            pendingUploadFiles = pendingUploadFiles.concat(files);
+            renderImagesPreview();
+          }
+          imagesInput.value = '';
+        });
+      }
+
+      if (form) form.addEventListener('submit', handleProductSave);
     }
 
-    window.dismissAlert = function() {
-      const banner = document.getElementById('alert-banner');
-      if (banner) banner.style.display = 'none';
-    };
+    // Main App Initialization with graceful fallback and screen messages
+    async function initDashboard() {
+      // 1. Check configuration
+      if (typeof window.supabase === 'undefined') {
+        showScreenError('Supabase JS library failed to load from CDN. Please check your internet connection and refresh.');
+        return;
+      }
 
-    function escapeHtml(str) {
-      if (!str) return '';
-      return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
+      if (typeof SUPABASE_URL === 'undefined' || typeof SUPABASE_ANON_KEY === 'undefined') {
+        showScreenError('Supabase configuration is missing. Please check that js/config.js is present.');
+        return;
+      }
+
+      try {
+        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      } catch (err) {
+        showScreenError('Failed to initialize Supabase client: ' + (err.message || err));
+        return;
+      }
+
+      // 2. Auth Guard: Verify active session
+      try {
+        const { data, error } = await supabase.auth.getSession();
+
+        if (error) {
+          console.error('Session retrieval error:', error);
+          showScreenError('Authentication error: ' + error.message + '. Please login again.');
+          setTimeout(() => { window.location.replace('index.html'); }, 2000);
+          return;
+        }
+
+        const session = data ? data.session : null;
+        if (!session || !session.user) {
+          // Unauthenticated -> Show prompt and redirect
+          const errScreen = document.getElementById('fatal-error-screen');
+          const mainContent = document.getElementById('admin-main-content');
+          if (errScreen) errScreen.style.display = 'block';
+          if (mainContent) mainContent.style.display = 'none';
+
+          setTimeout(() => {
+            window.location.replace('index.html');
+          }, 1500);
+          return;
+        }
+
+        // Authenticated! Show user email in top nav
+        const email = session.user.email || 'Admin';
+        const navEmail = document.getElementById('nav-user-email');
+        if (navEmail) navEmail.textContent = email;
+
+      } catch (err) {
+        console.error('Session guard exception:', err);
+        showScreenError('Authentication verification failed: ' + (err.message || err));
+        setTimeout(() => { window.location.replace('index.html'); }, 2000);
+        return;
+      }
+
+      // 3. Setup UI & Form Events
+      try {
+        const logoutBtn = document.getElementById('btn-logout');
+        if (logoutBtn) {
+          logoutBtn.addEventListener('click', async () => {
+            logoutBtn.disabled = true;
+            logoutBtn.innerHTML = '<span>Logging out...</span>';
+            try {
+              await supabase.auth.signOut();
+            } catch (e) {}
+            window.location.replace('index.html');
+          });
+        }
+
+        setupFormEvents();
+      } catch (err) {
+        console.error('Form setup error:', err);
+      }
+
+      // 4. Load Products Table
+      await loadProductsTable();
+
+      // 5. Auth State Change Listener
+      supabase.auth.onAuthStateChange((event, session) => {
+        if (event === 'SIGNED_OUT' || !session) {
+          window.location.replace('index.html');
+        }
+      });
+    }
+
+    // Robust document ready execution (works whether loaded before or after DOMContentLoaded)
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initDashboard);
+    } else {
+      initDashboard();
     }
   </script>
 </body>
