@@ -194,9 +194,12 @@ function getCategoryDisplayName(cat) {
 
 // Fetch all products from Supabase with graceful fallback
 async function fetchSupabaseProducts() {
-  if (typeof window.supabase !== 'undefined' && typeof SUPABASE_URL !== 'undefined' && typeof SUPABASE_ANON_KEY !== 'undefined') {
+  const client = (typeof supabaseClient !== 'undefined' && supabaseClient) ? supabaseClient : 
+    (typeof window.supabase !== 'undefined' && typeof SUPABASE_URL !== 'undefined' && typeof SUPABASE_ANON_KEY !== 'undefined') ?
+      window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+
+  if (client) {
     try {
-      const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
       const { data, error } = await client
         .from('products')
         .select('*')
@@ -209,7 +212,7 @@ async function fetchSupabaseProducts() {
         console.warn('Supabase fetch error, using fallback catalog:', error.message);
       }
     } catch (err) {
-      console.warn('Supabase initialization failed, using fallback catalog:', err);
+      console.warn('Supabase query failed, using fallback catalog:', err);
     }
   }
   return DEFAULT_PRODUCTS;
@@ -217,9 +220,12 @@ async function fetchSupabaseProducts() {
 
 // Fetch single product by slug
 async function fetchSupabaseProductBySlug(slug) {
-  if (typeof window.supabase !== 'undefined' && typeof SUPABASE_URL !== 'undefined' && typeof SUPABASE_ANON_KEY !== 'undefined') {
+  const client = (typeof supabaseClient !== 'undefined' && supabaseClient) ? supabaseClient : 
+    (typeof window.supabase !== 'undefined' && typeof SUPABASE_URL !== 'undefined' && typeof SUPABASE_ANON_KEY !== 'undefined') ?
+      window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+
+  if (client) {
     try {
-      const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
       const { data, error } = await client
         .from('products')
         .select('*')

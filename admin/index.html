@@ -260,17 +260,21 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', async () => {
-      // 1. Initialize Supabase
-      if (typeof window.supabase === 'undefined' || typeof SUPABASE_URL === 'undefined' || typeof SUPABASE_ANON_KEY === 'undefined') {
-        showError('Supabase configuration is missing. Please check js/config.js.');
+      // 1. Ensure Supabase Client is ready
+      if (!supabaseClient && typeof window.supabase !== 'undefined' && typeof SUPABASE_URL !== 'undefined' && typeof SUPABASE_ANON_KEY !== 'undefined') {
+        try {
+          supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        } catch (e) {}
+      }
+
+      if (!supabaseClient) {
+        showError('Supabase configuration is missing or failed to initialize. Please check js/config.js.');
         return;
       }
 
-      const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
       // 2. If already logged in with an active session, redirect straight to dashboard
       try {
-        const { data: { session } } = await client.auth.getSession();
+        const { data: { session } } = await supabaseClient.auth.getSession();
         if (session && session.user) {
           window.location.replace('dashboard.html');
           return;
@@ -312,7 +316,7 @@
         submitBtn.innerHTML = '<span>Verifying...</span>';
 
         try {
-          const { data, error } = await client.auth.signInWithPassword({
+          const { data, error } = await supabaseClient.auth.signInWithPassword({
             email: email,
             password: password
           });

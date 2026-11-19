@@ -1000,7 +1000,6 @@
   <script src="../js/config.js?v=2.4"></script>
 
   <script>
-    let supabase = null;
     let productsList = [];
     let currentImageUrls = [];
     let pendingUploadFiles = [];
@@ -1200,7 +1199,7 @@
       let isUnique = false;
 
       while (!isUnique) {
-        let query = supabase.from('products').select('id').eq('slug', slug);
+        let query = supabaseClient.from('products').select('id').eq('slug', slug);
         if (excludeId) {
           query = query.neq('id', excludeId);
         }
@@ -1221,7 +1220,7 @@
       if (!tbody) return;
 
       try {
-        const { data, error } = await supabase
+        const { data, error } = await supabaseClient
           .from('products')
           .select('*')
           .order('id', { ascending: false });
@@ -1357,7 +1356,7 @@
             const filename = `${slug}-${Date.now()}-${i + 1}.${ext}`;
             const filePath = `${filename}`;
 
-            const { error: uploadErr } = await supabase.storage
+            const { error: uploadErr } = await supabaseClient.storage
               .from('product-images')
               .upload(filePath, compressedBlob, {
                 contentType: 'image/jpeg',
@@ -1370,7 +1369,7 @@
               throw new Error(`Image upload failed: ${uploadErr.message}`);
             }
 
-            const { data: { publicUrl } } = supabase.storage
+            const { data: { publicUrl } } = supabaseClient.storage
               .from('product-images')
               .getPublicUrl(filePath);
 
@@ -1393,7 +1392,7 @@
         };
 
         if (id) {
-          const { error } = await supabase
+          const { error } = await supabaseClient
             .from('products')
             .update(payload)
             .eq('id', id);
@@ -1401,7 +1400,7 @@
           if (error) throw error;
           showAlert(`"${name}" updated successfully.`, 'success');
         } else {
-          const { error } = await supabase
+          const { error } = await supabaseClient
             .from('products')
             .insert([payload]);
 
@@ -1429,7 +1428,7 @@
       if (!confirmDelete) return;
 
       try {
-        const { error } = await supabase
+        const { error } = await supabaseClient
           .from('products')
           .delete()
           .eq('id', prodId);
@@ -1492,27 +1491,21 @@
 
     // Main App Initialization with graceful fallback and screen messages
     async function initDashboard() {
-      // 1. Check configuration
-      if (typeof window.supabase === 'undefined') {
-        showScreenError('Supabase JS library failed to load from CDN. Please check your internet connection and refresh.');
-        return;
+      // 1. Ensure Supabase Client is initialized
+      if (!supabaseClient && typeof window.supabase !== 'undefined' && typeof SUPABASE_URL !== 'undefined' && typeof SUPABASE_ANON_KEY !== 'undefined') {
+        try {
+          supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        } catch (e) {}
       }
 
-      if (typeof SUPABASE_URL === 'undefined' || typeof SUPABASE_ANON_KEY === 'undefined') {
-        showScreenError('Supabase configuration is missing. Please check that js/config.js is present.');
-        return;
-      }
-
-      try {
-        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-      } catch (err) {
-        showScreenError('Failed to initialize Supabase client: ' + (err.message || err));
+      if (!supabaseClient) {
+        showScreenError('Supabase client failed to initialize. Please check your network connection and js/config.js.');
         return;
       }
 
       // 2. Auth Guard: Verify active session
       try {
-        const { data, error } = await supabase.auth.getSession();
+        const { data, error } = await supabaseClient.auth.getSession();
 
         if (error) {
           console.error('Session retrieval error:', error);
@@ -1555,7 +1548,7 @@
             logoutBtn.disabled = true;
             logoutBtn.innerHTML = '<span>Logging out...</span>';
             try {
-              await supabase.auth.signOut();
+              await supabaseClient.auth.signOut();
             } catch (e) {}
             window.location.replace('index.html');
           });
@@ -1570,7 +1563,7 @@
       await loadProductsTable();
 
       // 5. Auth State Change Listener
-      supabase.auth.onAuthStateChange((event, session) => {
+      supabaseClient.auth.onAuthStateChange((event, session) => {
         if (event === 'SIGNED_OUT' || !session) {
           window.location.replace('index.html');
         }

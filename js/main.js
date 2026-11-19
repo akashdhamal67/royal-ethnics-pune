@@ -402,9 +402,8 @@ function initLazyMedia() {
    8. Supabase Appointment Booking Modal
    -------------------------------------------------------------------------- */
 function initAppointmentModal() {
-  // 1. Initialize Supabase Client
-  let supabaseClient = null;
-  if (typeof window.supabase !== 'undefined' && typeof SUPABASE_URL !== 'undefined' && typeof SUPABASE_ANON_KEY !== 'undefined') {
+  // 1. Ensure Supabase Client is ready
+  if (!supabaseClient && typeof window.supabase !== 'undefined' && typeof SUPABASE_URL !== 'undefined' && typeof SUPABASE_ANON_KEY !== 'undefined') {
     try {
       supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     } catch (err) {
